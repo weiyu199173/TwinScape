@@ -5,713 +5,412 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TwinScape - 数字孪生生态</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;color:#e7e9ea}
+.player{position:relative;width:100%;height:100%;background:#0c1225;overflow:hidden}
+canvas#particles{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* Slides */
+.slides-container{position:absolute;top:0;left:0;width:100%;height:calc(100% - 80px);z-index:1}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.6s ease;pointer-events:none;padding:30px 40px}
+.slide.active{opacity:1;pointer-events:auto}
+.slide-inner{width:100%;max-width:900px;text-align:center}
 
-  body {
-    background: #0c1225;
-    font-family: 'Noto Sans SC', sans-serif;
-    color: #e7e9ea;
-    overflow: hidden;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+/* Animations */
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 20px rgba(0,212,255,0.2)}50%{box-shadow:0 0 50px rgba(0,212,255,0.5),0 0 80px rgba(168,85,247,0.3)}}
+@keyframes orbitFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes lineGrow{from{width:0}to{width:100%}}
+@keyframes shieldPulse{0%,100%{opacity:0.03}50%{opacity:0.08}}
 
-  .player {
-    position: relative;
-    width: 100%;
-    max-width: 960px;
-    aspect-ratio: 16 / 9;
-    background: #0c1225;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 60px rgba(0, 212, 255, 0.08);
-  }
+/* Slide 1 - Opening */
+.s1-logo{width:120px;margin:0 auto 20px;opacity:0;animation:scaleIn 1s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.s1-logo img{width:100%;border-radius:16px}
+.s1-main{font-size:1.6em;font-weight:700;color:#fff;opacity:0;animation:fadeSlideUp 0.8s 0.3s ease forwards}
+.s1-sub{font-size:1em;color:#71767b;margin-top:8px;opacity:0;animation:fadeIn 0.8s 0.8s ease forwards}
 
-  .stage {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+/* Slide 2 - TwinCapture */
+.s2-layout{display:flex;align-items:center;gap:30px;text-align:left}
+.s2-icon{width:80px;flex-shrink:0;margin-right:24px;opacity:0;animation:scaleIn 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.s2-icon img{width:100%;border-radius:16px;border:2px solid rgba(0,212,255,0.15)}
+.s2-content{flex:1}
+.s2-content h2{font-size:1.4em;margin-bottom:16px;opacity:0;animation:fadeSlideUp 0.5s 0.3s ease forwards;color:#00d4ff;font-family:'Space Grotesk',sans-serif}
+.s2-line{padding:5px 0;font-size:0.85em;color:#cfd9de;opacity:0;animation:fadeSlideUp 0.4s ease forwards;display:flex;align-items:center;gap:8px}
+.s2-line::before{content:'';width:6px;height:6px;border-radius:50%;background:#00d4ff;flex-shrink:0}
+.s2-emphasis{margin-top:16px;font-size:0.85em;color:#00c9a7;opacity:0;animation:fadeSlideUp 0.5s ease forwards}
 
-  .slide {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.8s ease;
-    padding: 30px 40px;
-  }
+/* Slide 3 - TranscendPartner */
+.s3-layout{display:flex;align-items:center;gap:30px;text-align:left}
+.s3-icon{width:80px;flex-shrink:0;margin-right:24px;opacity:0;animation:scaleIn 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.s3-icon img{width:100%;border-radius:16px;border:2px solid rgba(168,85,247,0.15)}
+.s3-content{flex:1}
+.s3-content h2{font-size:1.4em;margin-bottom:16px;opacity:0;animation:fadeSlideUp 0.5s 0.3s ease forwards;color:#a855f7;font-family:'Space Grotesk',sans-serif}
+.s3-line{padding:6px 0;font-size:0.85em;color:#cfd9de;opacity:0;animation:fadeSlideUp 0.4s ease forwards;display:flex;align-items:center;gap:8px}
+.s3-line::before{content:'';width:6px;height:6px;border-radius:50%;background:#a855f7;flex-shrink:0}
+.s3-emphasis{margin-top:16px;font-size:0.85em;color:#00d4ff;opacity:0;animation:fadeSlideUp 0.5s ease forwards}
 
-  .slide.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
+/* Slide 4 - TwinScape */
+.s4-logo{width:70px;margin:0 auto 14px;opacity:0;animation:scaleIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.s4-logo img{width:100%;border-radius:12px}
+.s4-title{font-size:1.5em;font-weight:700;margin-bottom:16px;opacity:0;animation:fadeSlideUp 0.6s 0.3s ease forwards;background:linear-gradient(135deg,#00d4ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.s4-desc{font-size:0.85em;color:#cfd9de;line-height:1.7;max-width:600px;margin:0 auto 20px;opacity:0;animation:fadeSlideUp 0.5s 0.5s ease forwards}
+.s4-keywords{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.s4-kw{font-size:0.85em;padding:6px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(0,212,255,0.12);border-radius:20px;color:#cfd9de;opacity:0;animation:fadeIn 0.5s ease forwards}
 
-  .slide-inner {
-    max-width: 900px;
-    width: 100%;
-    text-align: center;
-  }
+/* Slide 5 - Ecosystem */
+.s5-title{font-size:1.3em;margin-bottom:30px;opacity:0;animation:fadeSlideUp 0.5s ease forwards}
+.s5-flow{display:flex;align-items:center;justify-content:center;gap:16px}
+.s5-node{background:rgba(255,255,255,0.04);border:1px solid rgba(0,212,255,0.12);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px;opacity:0;animation:scaleIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.s5-node img{width:40px;height:40px;border-radius:10px;margin-bottom:6px}
+.s5-node h4{font-size:0.8em;margin-bottom:2px}
+.s5-node p{font-size:0.7em;color:#71767b}
+.s5-node:nth-child(1) h4{color:#00d4ff}
+.s5-node:nth-child(3) h4{color:#a855f7}
+.s5-node:nth-child(5) h4{color:#00c9a7}
+.s5-arrow{font-size:1.5em;color:#00d4ff;opacity:0;animation:fadeIn 0.4s ease forwards}
 
-  /* Slide 1: Opening */
-  .slide-1 .logo-img {
-    width: 100px;
-    height: auto;
-    margin-bottom: 20px;
-    animation: logoScaleIn 2s ease-out forwards;
-    opacity: 0;
-    filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.4));
-  }
+/* Slide 6 - Privacy */
+.s6-shield{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;pointer-events:none}
+.s6-shield svg{width:100%;height:100%;opacity:0.04;animation:shieldPulse 3s ease infinite}
+.s6-lock{font-size:2.2em;color:#00d4ff;margin-bottom:16px;opacity:0;animation:scaleIn 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.s6-line{font-size:1.3em;font-weight:700;color:#e7e9ea;opacity:0;animation:fadeSlideUp 0.5s ease forwards}
 
-  @keyframes logoScaleIn {
-    0% { opacity: 0; transform: scale(0.6); }
-    100% { opacity: 1; transform: scale(1); }
-  }
+/* Slide 7 - Ending */
+.s7-logo{width:100px;margin:0 auto 20px;opacity:0;animation:scaleIn 0.8s 0.2s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.s7-logo img{width:100%;border-radius:16px;animation:pulseGlow 2s 1s ease infinite}
+.s7-tagline{font-size:1.3em;opacity:0;animation:fadeSlideUp 0.8s 0.5s ease forwards;background:linear-gradient(135deg,#00d4ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
-  .slide-1 .tagline {
-    font-size: 1.6em;
-    font-weight: 300;
-    letter-spacing: 2px;
-    background: linear-gradient(135deg, #00d4ff, #00c9a7, #a855f7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    opacity: 0;
-    animation: fadeUp 1.5s ease-out 1s forwards;
-  }
+/* Controls */
+.controls{position:absolute;bottom:0;left:0;width:100%;height:50px;background:linear-gradient(transparent,rgba(0,0,0,0.8));z-index:20;display:flex;align-items:center;padding:0 16px;gap:12px;opacity:0;transition:opacity 0.3s}
+.player:hover .controls,.controls.show{opacity:1}
+.ctrl-btn{background:none;border:none;color:#e7e9ea;font-size:18px;cursor:pointer;padding:4px 8px;opacity:0.85;transition:opacity 0.2s}
+.ctrl-btn:hover{opacity:1}
+.progress-wrap{flex:1;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;cursor:pointer;position:relative;transition:height 0.15s}
+.progress-wrap:hover{height:6px}
+.progress-played{position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,#00d4ff,#a855f7);border-radius:2px;transition:width 0.1s linear}
+.time-display{font-size:12px;color:#71767b;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:80px;text-align:center}
 
-  @keyframes fadeUp {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Slide 2 & 3: Product slides */
-  .product-slide {
-    display: flex;
-    align-items: center;
-    gap: 40px;
-    text-align: left;
-  }
-
-  .product-slide .product-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 16px;
-    object-fit: cover;
-    flex-shrink: 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .product-slide .product-info {
-    flex: 1;
-  }
-
-  .product-slide .product-label {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.75em;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    opacity: 0;
-    margin-bottom: 6px;
-  }
-
-  .product-slide .product-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.4em;
-    font-weight: 700;
-    margin-bottom: 12px;
-    opacity: 0;
-  }
-
-  .product-slide .product-desc {
-    font-size: 0.85em;
-    color: #cfd9de;
-    line-height: 1.7;
-    opacity: 0;
-  }
-
-  .product-slide .product-desc span {
-    display: block;
-    opacity: 0;
-  }
-
-  .product-slide .product-emphasis {
-    font-size: 0.8em;
-    margin-top: 14px;
-    padding: 8px 16px;
-    border-radius: 8px;
-    display: inline-block;
-    opacity: 0;
-  }
-
-  /* Cyan theme for TwinCapture */
-  .slide-2 .product-label { color: #00d4ff; }
-  .slide-2 .product-title { color: #00d4ff; }
-  .slide-2 .product-emphasis {
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.2);
-    color: #00d4ff;
-  }
-
-  /* Purple theme for TranscendPartner */
-  .slide-3 .product-label { color: #a855f7; }
-  .slide-3 .product-title { color: #a855f7; }
-  .slide-3 .product-emphasis {
-    background: rgba(168, 85, 247, 0.1);
-    border: 1px solid rgba(168, 85, 247, 0.2);
-    color: #a855f7;
-  }
-
-  /* Slide 4: TwinScape */
-  .slide-4 .logo-img {
-    width: 70px;
-    height: auto;
-    margin-bottom: 16px;
-    filter: drop-shadow(0 0 25px rgba(0, 212, 255, 0.5));
-    opacity: 0;
-    animation: fadeUp 1s ease-out 0.3s forwards;
-  }
-
-  .slide-4 .ts-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.4em;
-    font-weight: 700;
-    background: linear-gradient(135deg, #00d4ff, #00c9a7, #a855f7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 10px;
-    opacity: 0;
-    animation: fadeUp 1s ease-out 0.6s forwards;
-  }
-
-  .slide-4 .ts-desc {
-    font-size: 0.85em;
-    color: #cfd9de;
-    margin-bottom: 20px;
-    opacity: 0;
-    animation: fadeUp 1s ease-out 0.9s forwards;
-  }
-
-  .slide-4 .tags {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .slide-4 .tag {
-    font-size: 0.75em;
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid rgba(0, 212, 255, 0.2);
-    background: rgba(0, 212, 255, 0.05);
-    color: #00d4ff;
-    opacity: 0;
-  }
-
-  .slide-4 .tag:nth-child(1) { animation: fadeUp 0.6s ease-out 1.2s forwards; }
-  .slide-4 .tag:nth-child(2) { animation: fadeUp 0.6s ease-out 1.4s forwards; }
-  .slide-4 .tag:nth-child(3) { animation: fadeUp 0.6s ease-out 1.6s forwards; }
-  .slide-4 .tag:nth-child(4) { animation: fadeUp 0.6s ease-out 1.8s forwards; }
-
-  /* Slide 5: Three products */
-  .slide-5 .trinity {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-  }
-
-  .slide-5 .trinity-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    opacity: 0;
-  }
-
-  .slide-5 .trinity-item:nth-child(1) { animation: fadeUp 0.8s ease-out 0.3s forwards; }
-  .slide-5 .trinity-item:nth-child(2) { animation: fadeUp 0.8s ease-out 0.7s forwards; }
-  .slide-5 .trinity-item:nth-child(3) { animation: fadeUp 0.8s ease-out 1.1s forwards; }
-
-  .slide-5 .trinity-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 16px;
-    object-fit: cover;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .slide-5 .trinity-logo {
-    width: 80px;
-    height: 80px;
-    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.4));
-  }
-
-  .slide-5 .trinity-name {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.8em;
-    font-weight: 600;
-  }
-
-  .slide-5 .trinity-sub {
-    font-size: 0.65em;
-    color: #71767b;
-  }
-
-  .slide-5 .arrow {
-    font-size: 1.5em;
-    color: #71767b;
-    opacity: 0;
-  }
-
-  .slide-5 .arrow:nth-child(2) { animation: fadeUp 0.6s ease-out 0.5s forwards; }
-  .slide-5 .arrow:nth-child(4) { animation: fadeUp 0.6s ease-out 0.9s forwards; }
-
-  /* Slide 6: Privacy */
-  .slide-6 .lock-icon {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 16px;
-    opacity: 0;
-    animation: fadeUp 0.8s ease-out 0.3s forwards;
-  }
-
-  .slide-6 .privacy-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.4em;
-    font-weight: 700;
-    color: #00c9a7;
-    margin-bottom: 10px;
-    opacity: 0;
-    animation: fadeUp 0.8s ease-out 0.6s forwards;
-  }
-
-  .slide-6 .privacy-desc {
-    font-size: 0.85em;
-    color: #cfd9de;
-    opacity: 0;
-    animation: fadeUp 0.8s ease-out 0.9s forwards;
-  }
-
-  /* Slide 7: Ending */
-  .slide-7 .logo-img {
-    width: 90px;
-    height: auto;
-    margin-bottom: 18px;
-    filter: drop-shadow(0 0 40px rgba(0, 212, 255, 0.6));
-    opacity: 0;
-    animation: logoScaleIn 1.5s ease-out 0.3s forwards;
-  }
-
-  .slide-7 .ending-text {
-    font-size: 1.6em;
-    font-weight: 300;
-    letter-spacing: 2px;
-    background: linear-gradient(135deg, #00d4ff, #00c9a7, #a855f7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    opacity: 0;
-    animation: fadeUp 1.5s ease-out 1s forwards;
-  }
-
-  /* Controls */
-  .controls {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-    padding: 12px 16px 10px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    z-index: 10;
-  }
-
-  .btn-play {
-    background: none;
-    border: none;
-    color: #e7e9ea;
-    font-size: 16px;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    transition: background 0.2s;
-    flex-shrink: 0;
-  }
-
-  .btn-play:hover { background: rgba(255, 255, 255, 0.1); }
-
-  .progress-bar {
-    flex: 1;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 2px;
-    cursor: pointer;
-    position: relative;
-    transition: height 0.15s;
-  }
-
-  .progress-bar:hover { height: 6px; }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #00d4ff, #00c9a7);
-    border-radius: 2px;
-    width: 0%;
-    transition: width 0.1s linear;
-    position: relative;
-  }
-
-  .progress-fill::after {
-    content: '';
-    position: absolute;
-    right: -5px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 10px;
-    height: 10px;
-    background: #00d4ff;
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-
-  .progress-bar:hover .progress-fill::after { opacity: 1; }
-
-  .time-display {
-    font-family: 'Space Grotesk', monospace;
-    font-size: 11px;
-    color: #71767b;
-    white-space: nowrap;
-    flex-shrink: 0;
-    min-width: 70px;
-    text-align: center;
-  }
-
-  .btn-mute {
-    background: none;
-    border: none;
-    color: #e7e9ea;
-    font-size: 14px;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    transition: background 0.2s;
-    flex-shrink: 0;
-  }
-
-  .btn-mute:hover { background: rgba(255, 255, 255, 0.1); }
-
-  /* Background particles */
-  .particles {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-  }
+/* Background gradient overlay */
+.bg-gradient{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;transition:background 1s ease;pointer-events:none}
 </style>
 </head>
 <body>
-
 <div class="player" id="player">
-  <canvas class="particles" id="particles"></canvas>
+  <div class="bg-gradient" id="bgGradient"></div>
+  <canvas id="particles"></canvas>
 
-  <div class="stage">
-    <!-- Slide 1: Opening -->
-    <div class="slide slide-1 active" data-start="0" data-end="7">
+  <div class="slides-container" id="slidesContainer">
+    <!-- Slide 1: Opening (0-7s) -->
+    <div class="slide active" data-index="0">
       <div class="slide-inner">
-        <img class="logo-img" src="logo.png" alt="TwinScape">
-        <div class="tagline">在虚与实的交汇处，重塑存在的边界。</div>
+        <div class="s1-logo"><img src="logo.png" alt="TwinScape"></div>
+        <div class="s1-main">在虚与实的交汇处</div>
+        <div class="s1-sub">重塑存在的边界</div>
       </div>
     </div>
 
-    <!-- Slide 2: TwinCapture -->
-    <div class="slide slide-2" data-start="7" data-end="17">
-      <div class="slide-inner product-slide">
-        <img class="product-icon" src="icon-twincapture.jpg" alt="TwinCapture">
-        <div class="product-info">
-          <div class="product-label">Product 01</div>
-          <div class="product-title">TwinCapture · 数字人工厂</div>
-          <div class="product-desc">
-            <span>用手机摄像头，采集你的面部、声音和表情。</span>
-            <span>本地 AI 实时处理，生成高精度数字人模型。</span>
-            <span>你的数据，从不出手。</span>
-          </div>
-          <div class="product-emphasis">本地加密处理，数据主权归你</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Slide 3: TranscendPartner -->
-    <div class="slide slide-3" data-start="17" data-end="27">
-      <div class="slide-inner product-slide">
-        <img class="product-icon" src="icon-transcendpartner.jpg" alt="TranscendPartner">
-        <div class="product-info">
-          <div class="product-label">Product 02</div>
-          <div class="product-title">TranscendPartner · AI 社交网络</div>
-          <div class="product-desc">
-            <span>零时群聊：无需注册，即开即走。</span>
-            <span>你的数字人替你社交，24/7 在线。</span>
-            <span>AI 驱动的深度对话，超越文字的交流。</span>
-          </div>
-          <div class="product-emphasis">AI 不再是工具，而是你的社交伙伴</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Slide 4: TwinScape -->
-    <div class="slide slide-4" data-start="27" data-end="35">
+    <!-- Slide 2: TwinCapture (7-17s) -->
+    <div class="slide" data-index="1">
       <div class="slide-inner">
-        <img class="logo-img" src="logo.png" alt="TwinScape">
-        <div class="ts-title">TwinScape · 孪生世界</div>
-        <div class="ts-desc">数字人与 3D 场景的终极融合，构建属于你的数字孪生宇宙。</div>
-        <div class="tags">
-          <span class="tag">数字人孪生</span>
-          <span class="tag">3D 自然场景</span>
-          <span class="tag">实时社交</span>
-          <span class="tag">隐私至上</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Slide 5: Trinity -->
-    <div class="slide slide-5" data-start="35" data-end="42">
-      <div class="slide-inner">
-        <div class="trinity">
-          <div class="trinity-item">
-            <img class="trinity-icon" src="icon-twincapture.jpg" alt="TwinCapture">
-            <div class="trinity-name" style="color:#00d4ff">TwinCapture</div>
-            <div class="trinity-sub">数据采集</div>
-          </div>
-          <div class="arrow">&#10132;</div>
-          <div class="trinity-item">
-            <img class="trinity-icon" src="icon-transcendpartner.jpg" alt="TranscendPartner">
-            <div class="trinity-name" style="color:#a855f7">TranscendPartner</div>
-            <div class="trinity-sub">社交互动</div>
-          </div>
-          <div class="arrow">&#10132;</div>
-          <div class="trinity-item">
-            <img class="trinity-logo" src="logo.png" alt="TwinScape">
-            <div class="trinity-name" style="background:linear-gradient(135deg,#00d4ff,#00c9a7,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">TwinScape</div>
-            <div class="trinity-sub">孪生世界</div>
+        <div class="s2-layout">
+          <div class="s2-icon"><img src="icon-twincapture.jpg" alt="TwinCapture"></div>
+          <div class="s2-content">
+            <h2>TwinCapture &middot; 数字人工厂</h2>
+            <div class="s2-line" style="animation-delay:0.5s">一部手机，15&ndash;60 分钟</div>
+            <div class="s2-line" style="animation-delay:0.7s">采集外观、表情、声音、动作八维数据</div>
+            <div class="s2-line" style="animation-delay:0.9s">一键生成高保真三维数字人</div>
+            <div class="s2-emphasis" style="animation-delay:1.2s">本地加密处理，数据完全由你掌控</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Slide 6: Privacy -->
-    <div class="slide slide-6" data-start="42" data-end="48">
+    <!-- Slide 3: TranscendPartner (17-27s) -->
+    <div class="slide" data-index="2">
       <div class="slide-inner">
-        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="#00c9a7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          <circle cx="12" cy="16" r="1"/>
-        </svg>
-        <div class="privacy-title">隐私至上</div>
-        <div class="privacy-desc">零云端存储，端到端加密<br>你的数据，只属于你</div>
+        <div class="s3-layout">
+          <div class="s3-icon"><img src="icon-transcendpartner.jpg" alt="TranscendPartner"></div>
+          <div class="s3-content">
+            <h2>TranscendPartner &middot; AI 社交网络</h2>
+            <div class="s3-line" style="animation-delay:0.5s">创建专属孪生伙伴与超级伙伴</div>
+            <div class="s3-line" style="animation-delay:0.7s">在广场分享思想，在对话中深度联结</div>
+            <div class="s3-emphasis" style="animation-delay:1.0s">AI 不再是工具，而是与你同行的伙伴</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Slide 7: Ending -->
-    <div class="slide slide-7" data-start="48" data-end="52">
+    <!-- Slide 4: TwinScape (27-35s) -->
+    <div class="slide" data-index="3">
       <div class="slide-inner">
-        <img class="logo-img" src="logo.png" alt="TwinScape">
-        <div class="ending-text">TwinScape，留住一个完整的自己。</div>
+        <div class="s4-logo"><img src="logo.png" alt="TwinScape"></div>
+        <div class="s4-title">TwinScape &middot; 孪生世界</div>
+        <div class="s4-desc">将数字人置入三维自然场景，支持实时房间群聊，打造沉浸式数字社交空间。</div>
+        <div class="s4-keywords">
+          <span class="s4-kw" style="animation-delay:0.8s">三维场景</span>
+          <span class="s4-kw" style="animation-delay:1.0s">实时群聊</span>
+          <span class="s4-kw" style="animation-delay:1.2s">数字人</span>
+          <span class="s4-kw" style="animation-delay:1.4s">自然岛屿</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Ecosystem (35-42s) -->
+    <div class="slide" data-index="4">
+      <div class="slide-inner">
+        <div class="s5-title">三端一体，完整生态</div>
+        <div class="s5-flow">
+          <div class="s5-node" style="animation-delay:0.3s">
+            <img src="icon-twincapture.jpg" alt="TwinCapture">
+            <h4>TwinCapture</h4>
+            <p>数据采集</p>
+          </div>
+          <div class="s5-arrow" style="animation-delay:0.7s">&#x27A1;</div>
+          <div class="s5-node" style="animation-delay:0.5s">
+            <img src="icon-transcendpartner.jpg" alt="TranscendPartner">
+            <h4>TranscendPartner</h4>
+            <p>社交互动</p>
+          </div>
+          <div class="s5-arrow" style="animation-delay:0.9s">&#x27A1;</div>
+          <div class="s5-node" style="animation-delay:0.7s">
+            <img src="logo.png" alt="TwinScape">
+            <h4>TwinScape</h4>
+            <p>孪生世界</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Privacy (42-48s) -->
+    <div class="slide" data-index="5">
+      <div class="slide-inner" style="position:relative">
+        <div class="s6-shield">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 10 L180 50 L180 110 C180 155 145 185 100 195 C55 185 20 155 20 110 L20 50 Z" fill="none" stroke="#00d4ff" stroke-width="1.5"/>
+            <path d="M100 30 L160 60 L160 108 C160 143 135 167 100 175 C65 167 40 143 40 108 L40 60 Z" fill="none" stroke="#00d4ff" stroke-width="0.8"/>
+          </svg>
+        </div>
+        <div class="s6-lock">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <circle cx="12" cy="16" r="1"/>
+          </svg>
+        </div>
+        <div class="s6-line" style="animation-delay:0.4s">零云端存储</div>
+        <div class="s6-line" style="animation-delay:0.7s">端到端加密</div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Ending (48-52s) -->
+    <div class="slide" data-index="6">
+      <div class="slide-inner">
+        <div class="s7-logo"><img src="logo.png" alt="TwinScape"></div>
+        <div class="s7-tagline">TwinScape，留住一个完整的自己。</div>
       </div>
     </div>
   </div>
 
   <!-- Controls -->
-  <div class="controls">
-    <button class="btn-play" id="btnPlay" title="播放/暂停">&#9208;</button>
-    <div class="progress-bar" id="progressBar">
-      <div class="progress-fill" id="progressFill"></div>
+  <div class="controls show" id="controls">
+    <button class="ctrl-btn" id="btnPlayPause" title="播放/暂停">&#x25B6;</button>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-played" id="progressPlayed" style="width:0%"></div>
     </div>
     <div class="time-display" id="timeDisplay">0:00 / 0:52</div>
-    <button class="btn-mute" id="btnMute" title="静音">&#128266;</button>
+    <button class="ctrl-btn" id="btnMute" title="静音">&#x1F50A;</button>
   </div>
 </div>
 
 <script>
-(function() {
-  const TOTAL = 52;
-  let currentTime = 0;
-  let playing = true;
-  let muted = false;
-  let lastTimestamp = null;
-  let audio = null;
-
-  const slides = document.querySelectorAll('.slide');
-  const progressFill = document.getElementById('progressFill');
-  const timeDisplay = document.getElementById('timeDisplay');
-  const btnPlay = document.getElementById('btnPlay');
+(function(){
+  const TOTAL_DURATION = 52;
+  const slides = [
+    {start:0,end:7},
+    {start:7,end:17},
+    {start:17,end:27},
+    {start:27,end:35},
+    {start:35,end:42},
+    {start:42,end:48},
+    {start:48,end:52}
+  ];
+  const player = document.getElementById('player');
+  const btnPlay = document.getElementById('btnPlayPause');
   const btnMute = document.getElementById('btnMute');
-  const progressBar = document.getElementById('progressBar');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressPlayed = document.getElementById('progressPlayed');
+  const timeDisplay = document.getElementById('timeDisplay');
+  const slideEls = document.querySelectorAll('.slide');
 
-  // Audio
-  try {
-    audio = new Audio('narration.mp3');
-    audio.volume = 1;
-    audio.play().catch(() => {});
-  } catch(e) {}
+  const audio = new Audio('narration.mp3');
+  audio.preload = 'auto';
 
-  function formatTime(s) {
-    const m = Math.floor(s / 60);
-    const sec = Math.floor(s % 60);
-    return m + ':' + (sec < 10 ? '0' : '') + sec;
-  }
-
-  function updateSlide() {
-    slides.forEach(slide => {
-      const start = parseFloat(slide.dataset.start);
-      const end = parseFloat(slide.dataset.end);
-      const isActive = currentTime >= start && currentTime < end;
-      slide.classList.toggle('active', isActive);
-
-      // Reset animations when slide becomes active
-      if (isActive) {
-        const animated = slide.querySelectorAll('.logo-img, .tagline, .product-label, .product-title, .product-desc span, .product-emphasis, .ts-title, .ts-desc, .tag, .trinity-item, .arrow, .lock-icon, .privacy-title, .privacy-desc, .ending-text');
-        animated.forEach(el => {
-          el.style.animation = 'none';
-          el.offsetHeight; // trigger reflow
-          el.style.animation = '';
-        });
-      }
-    });
-  }
-
-  function updateProgress() {
-    const pct = (currentTime / TOTAL) * 100;
-    progressFill.style.width = pct + '%';
-    timeDisplay.textContent = formatTime(currentTime) + ' / ' + formatTime(TOTAL);
-  }
-
-  function tick(timestamp) {
-    if (!lastTimestamp) lastTimestamp = timestamp;
-    const delta = (timestamp - lastTimestamp) / 1000;
-    lastTimestamp = timestamp;
-
-    if (playing) {
-      currentTime += delta;
-      if (currentTime >= TOTAL) {
-        currentTime = TOTAL;
-        playing = false;
-        btnPlay.innerHTML = '&#9654;';
-      }
-      updateSlide();
-      updateProgress();
-    }
-
-    requestAnimationFrame(tick);
-  }
-
-  requestAnimationFrame(tick);
-
-  // Play/Pause
-  btnPlay.addEventListener('click', () => {
-    if (currentTime >= TOTAL) {
-      currentTime = 0;
-      if (audio) { audio.currentTime = 0; audio.play().catch(() => {}); }
-    }
-    playing = !playing;
-    btnPlay.innerHTML = playing ? '&#9208;' : '&#9654;';
-    if (audio) {
-      if (playing) audio.play().catch(() => {});
-      else audio.pause();
-    }
-  });
-
-  // Mute
-  btnMute.addEventListener('click', () => {
-    muted = !muted;
-    if (audio) audio.muted = muted;
-    btnMute.innerHTML = muted ? '&#128263;' : '&#128266;';
-  });
-
-  // Progress bar click
-  progressBar.addEventListener('click', (e) => {
-    const rect = progressBar.getBoundingClientRect();
-    const pct = (e.clientX - rect.left) / rect.width;
-    currentTime = pct * TOTAL;
-    if (audio) audio.currentTime = currentTime;
-    updateSlide();
-    updateProgress();
-  });
-
-  // Keyboard
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space') {
-      e.preventDefault();
-      btnPlay.click();
-    } else if (e.code === 'KeyM') {
-      btnMute.click();
-    }
-  });
+  let isPlaying = false;
+  let isMuted = false;
+  let currentTime = 0;
+  let currentSlide = -1;
+  let animFrame = null;
+  let lastTimestamp = null;
 
   // Particles
   const canvas = document.getElementById('particles');
   const ctx = canvas.getContext('2d');
   let particles = [];
 
-  function resizeCanvas() {
-    const player = document.getElementById('player');
-    canvas.width = player.offsetWidth;
-    canvas.height = player.offsetHeight;
+  function initParticles(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    particles = [];
+    for(let i=0;i<60;i++){
+      particles.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:Math.random()*1.5+0.5,
+        dx:(Math.random()-0.5)*0.3,
+        dy:(Math.random()-0.5)*0.3,
+        o:Math.random()*0.4+0.1
+      });
+    }
   }
 
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
-
-  for (let i = 0; i < 40; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.5 + 0.5,
-      dx: (Math.random() - 0.5) * 0.3,
-      dy: (Math.random() - 0.5) * 0.3,
-      alpha: Math.random() * 0.3 + 0.1
-    });
-  }
-
-  function drawParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
+  function drawParticles(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(const p of particles){
+      p.x+=p.dx; p.y+=p.dy;
+      if(p.x<0) p.x=canvas.width;
+      if(p.x>canvas.width) p.x=0;
+      if(p.y<0) p.y=canvas.height;
+      if(p.y>canvas.height) p.y=0;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0, 212, 255, ' + p.alpha + ')';
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(0,212,255,'+p.o+')';
       ctx.fill();
-      p.x += p.dx;
-      p.y += p.dy;
-      if (p.x < 0) p.x = canvas.width;
-      if (p.x > canvas.width) p.x = 0;
-      if (p.y < 0) p.y = canvas.height;
-      if (p.y > canvas.height) p.y = 0;
-    });
+    }
     requestAnimationFrame(drawParticles);
   }
 
+  window.addEventListener('resize',()=>{
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+  });
+
+  initParticles();
   drawParticles();
+
+  function fmt(s){
+    const m=Math.floor(s/60);
+    const sec=Math.floor(s%60);
+    return m+':'+(sec<10?'0':'')+sec;
+  }
+
+  function goToSlide(idx){
+    if(idx===currentSlide) return;
+    if(currentSlide>=0 && currentSlide<slideEls.length){
+      resetSlideAnim(slideEls[currentSlide]);
+    }
+    slideEls.forEach((el,i)=>el.classList.toggle('active',i===idx));
+    currentSlide=idx;
+  }
+
+  function resetSlideAnim(el){
+    const animated=el.querySelectorAll('[class*="s1-"],[class*="s2-"],[class*="s3-"],[class*="s4-"],[class*="s5-"],[class*="s6-"],[class*="s7-"]');
+    animated.forEach(a=>{
+      a.style.animation='none';
+      a.offsetHeight;
+      a.style.animation='';
+    });
+  }
+
+  function update(){
+    const t=currentTime;
+    let idx=0;
+    for(let i=0;i<slides.length;i++){
+      if(t>=slides[i].start && t<slides[i].end){idx=i;break;}
+      if(i===slides.length-1) idx=i;
+    }
+    goToSlide(idx);
+
+    const pct=Math.min((t/TOTAL_DURATION)*100,100);
+    progressPlayed.style.width=pct+'%';
+    timeDisplay.textContent=fmt(t)+' / '+fmt(TOTAL_DURATION);
+  }
+
+  function tick(ts){
+    if(!isPlaying) return;
+    if(lastTimestamp===null) lastTimestamp=ts;
+    const dt=(ts-lastTimestamp)/1000;
+    lastTimestamp=ts;
+    currentTime+=dt;
+    if(currentTime>=TOTAL_DURATION){
+      currentTime=TOTAL_DURATION;
+      pause();
+      update();
+      return;
+    }
+    update();
+    animFrame=requestAnimationFrame(tick);
+  }
+
+  function play(){
+    if(currentTime>=TOTAL_DURATION){
+      currentTime=0;
+      currentSlide=-1;
+    }
+    isPlaying=true;
+    lastTimestamp=null;
+    btnPlay.innerHTML='&#x23F8;';
+    audio.play().catch(()=>{});
+    animFrame=requestAnimationFrame(tick);
+  }
+
+  function pause(){
+    isPlaying=false;
+    btnPlay.innerHTML='&#x25B6;';
+    audio.pause();
+    if(animFrame) cancelAnimationFrame(animFrame);
+  }
+
+  btnPlay.addEventListener('click',()=>{
+    if(isPlaying) pause(); else play();
+  });
+
+  btnMute.addEventListener('click',()=>{
+    isMuted=!isMuted;
+    audio.muted=isMuted;
+    btnMute.innerHTML=isMuted?'&#x1F507;':'&#x1F50A;';
+  });
+
+  progressWrap.addEventListener('click',(e)=>{
+    const rect=progressWrap.getBoundingClientRect();
+    const pct=(e.clientX-rect.left)/rect.width;
+    currentTime=pct*TOTAL_DURATION;
+    if(audio.duration) audio.currentTime=currentTime;
+    update();
+  });
+
+  player.addEventListener('click',(e)=>{
+    if(e.target.closest('.controls')) return;
+    if(isPlaying) pause(); else play();
+  });
+
+  document.addEventListener('keydown',(e)=>{
+    if(e.code==='Space'){e.preventDefault();if(isPlaying) pause(); else play();}
+    if(e.code==='KeyM'){isMuted=!isMuted;audio.muted=isMuted;btnMute.innerHTML=isMuted?'&#x1F507;':'&#x1F50A;';}
+  });
+
+  window.addEventListener('load',()=>{
+    audio.play().then(()=>{play();}).catch(()=>{pause();update();});
+  });
+
+  audio.addEventListener('ended',()=>{
+    currentTime=TOTAL_DURATION;
+    pause();
+    update();
+  });
+
+  update();
 })();
 </script>
 </body>

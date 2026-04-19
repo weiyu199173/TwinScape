@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TwinCapture - 数字人工厂</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#1d9bf0;
+  --primary-container:#1d9bf0;
+  --on-primary:#000;
+  --on-primary-container:#fff;
+  --secondary:#ff44aa;
+  --secondary-container:#2d1a24;
+  --on-secondary-container:#ffd9e2;
+  --on-secondary:#fff;
+  --background:#000;
+  --surface:#0a0a0a;
+  --on-surface:#e7e9ea;
+  --on-surface-variant:#71767b;
+  --surface-container-low:#0a0a0a;
+  --surface-container-high:#1a1a1a;
+  --surface-container-highest:#262626;
+  --surface-container-lowest:#050505;
+  --outline:#71767b;
+  --outline-variant:#1a1a1a;
+  --error:#ff4444;
+  --error-container:#93000a;
+  --font-headline:"Space Grotesk",sans-serif;
+  --font-body:"Manrope",sans-serif;
+  --font-label:"Manrope",sans-serif;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--background);color:var(--on-surface);font-family:var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+#app{max-width:430px;margin:0 auto;height:100%;position:relative;overflow:hidden;background:var(--background)}
+
+/* ===== HEADER - exact match from TranscendPartner ===== */
+/* From MeScreen/ContactsScreen/MessagesScreen: h-16 bg-background/80 backdrop-blur-xl border-b border-white/5 px-6 */
+.header{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:40;height:64px;background:rgba(0,0,0,0.8);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.header-left{display:flex;align-items:center;gap:16px}
+.header-title{font-family:var(--font-headline);font-size:20px;font-weight:700;color:var(--on-surface);letter-spacing:0.15em;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:16px;color:var(--primary)}
+.header-btn{padding:8px;border-radius:50%;border:none;background:none;color:var(--primary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;-webkit-tap-highlight-color:transparent}
+.header-btn:hover{background:rgba(29,155,240,0.1)}
+.header-btn svg{width:22px;height:22px}
+.demo-badge{font-size:9px;font-weight:700;color:var(--primary);background:rgba(29,155,240,0.1);border:1px solid rgba(29,155,240,0.2);padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.1em}
+
+/* ===== BOTTOM NAV - exact match from Navigation.tsx ===== */
+/* h-20 pb-safe bg-background/80 backdrop-blur-xl shadow-[0_-20px_40px_rgba(0,0,0,0.4)] border-t border-white/5 */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:50;display:flex;justify-content:space-around;align-items:center;height:80px;padding:0 16px;background:rgba(0,0,0,0.8);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 -20px 40px rgba(0,0,0,0.4);border-top:1px solid rgba(255,255,255,0.05)}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;padding:8px 12px;border:none;background:none;-webkit-tap-highlight-color:transparent}
+.nav-item svg{width:24px;height:24px;transition:all 0.2s}
+.nav-item span{font-size:10px;text-transform:uppercase;letter-spacing:0.05em;font-weight:600;margin-top:4px;transition:all 0.2s}
+.nav-item.active{color:var(--primary);font-weight:700}
+.nav-item.active svg{fill:rgba(29,155,240,0.2)}
+.nav-item:not(.active){color:var(--outline)}
+.nav-item:not(.active):hover{color:var(--on-surface)}
+
+/* ===== MAIN CONTENT ===== */
+.main{position:absolute;top:64px;bottom:80px;left:0;right:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--surface-container-highest) transparent}
+.main::-webkit-scrollbar{width:4px}
+.main::-webkit-scrollbar-track{background:var(--background)}
+.main::-webkit-scrollbar-thumb{background:var(--surface-container-highest);border-radius:999px}
+
+/* Tab panels */
+.tab-panel{display:none;padding:20px 24px 24px;animation:fadeIn 0.3s ease}
+.tab-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== SEARCH BAR - from ContactsScreen/MessagesScreen ===== */
+/* bg-surface-container h-12 px-6 rounded-full border border-white/5 focus-within:border-primary/40 */
+.search-bar{display:flex;align-items:center;gap:16px;background:var(--surface-container);height:48px;padding:0 24px;border-radius:999px;border:1px solid rgba(255,255,255,0.05);transition:all 0.3s;margin-bottom:32px}
+.search-bar:focus-within{border-color:rgba(29,155,240,0.4)}
+.search-bar svg{width:18px;height:18px;color:var(--outline);transition:color 0.3s;flex-shrink:0}
+.search-bar:focus-within svg{color:var(--primary)}
+.search-bar input{flex:1;background:transparent;border:none;outline:none;font-size:12px;color:var(--on-surface);font-family:var(--font-body)}
+.search-bar input::placeholder{color:rgba(113,118,123,0.4)}
+
+/* ===== SECTION TITLES - from ContactsScreen/DiscoveryScreen ===== */
+/* text-[10px] uppercase font-bold tracking-[0.2em] text-primary / text-outline */
+.section-title{font-size:10px;text-transform:uppercase;font-weight:700;letter-spacing:0.2em;color:var(--outline);margin-bottom:16px;padding-left:8px}
+.section-title-primary{color:var(--primary)}
+
+/* ===== CARDS - from MeScreen/DiscoveryScreen ===== */
+/* bg-surface-container-low rounded-2xl p-4 border border-white/5 */
+/* bg-surface-container-high/40 rounded-xl p-6 border border-white/5 */
+.card{background:var(--surface-container-low);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:20px;transition:all 0.3s}
+.card:hover{border-color:rgba(29,155,240,0.2)}
+.card-high{background:rgba(26,26,26,0.4);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:24px;transition:all 0.3s}
+.card-high:hover{background:var(--surface-container-high)}
+
+/* ===== WELCOME CARD - from MeScreen header area ===== */
+.welcome-card{position:relative;border-radius:20px;padding:24px;background:var(--surface-container-low);border:1px solid rgba(255,255,255,0.05);overflow:hidden}
+.welcome-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),transparent);opacity:0.3}
+.welcome-title{font-family:var(--font-headline);font-size:28px;font-weight:700;margin-bottom:4px}
+.welcome-sub{font-size:13px;color:var(--outline);line-height:1.6}
+
+/* ===== AVATAR RING - from MeScreen TiltedCard ===== */
+/* w-32 h-32 rounded-full border-2 border-surface-container-high bg-surface-container */
+.avatar-ring{position:relative;display:inline-block}
+.avatar-ring::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-container));opacity:0.25;filter:blur(8px);transition:opacity 1s}
+.avatar-ring:hover::before{opacity:0.5}
+.avatar-img{width:128px;height:128px;border-radius:50%;border:2px solid var(--surface-container-high);background:var(--surface-container);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+
+/* ===== DIGITAL HUMAN PREVIEW ===== */
+.dh-preview{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,rgba(29,155,240,0.2),rgba(29,155,240,0.05));border:2px solid rgba(29,155,240,0.3);display:flex;align-items:center;justify-content:center;position:relative;animation:pulse-glow 3s ease-in-out infinite}
+.dh-preview::before{content:'';position:absolute;inset:-4px;border-radius:50%;background:conic-gradient(from 0deg,var(--primary),var(--secondary),var(--primary));opacity:0.3;animation:spin 8s linear infinite;filter:blur(2px)}
+.dh-preview::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--background)}
+.dh-inner{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(29,155,240,0.15),rgba(255,68,170,0.1))}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(29,155,240,0.2)}50%{box-shadow:0 0 40px rgba(29,155,240,0.4)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== STAT CARDS - from MeScreen stats ===== */
+/* bg-surface-container-low px-5 py-3 rounded-2xl border border-white/5 */
+.stat-card{background:var(--surface-container-low);padding:16px 20px;border-radius:16px;border:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:16px;transition:all 0.3s}
+.stat-card:hover{border-color:rgba(29,155,240,0.2)}
+.stat-icon{width:40px;height:40px;border-radius:50%;background:rgba(29,155,240,0.1);display:flex;align-items:center;justify-content:center;color:var(--primary);transition:all 0.3s;flex-shrink:0}
+.stat-card:hover .stat-icon{background:var(--primary);color:var(--on-primary)}
+.stat-label{font-size:9px;text-transform:uppercase;letter-spacing:0.15em;color:var(--outline);font-weight:700}
+.stat-value{font-size:20px;font-family:var(--font-headline);font-weight:700;color:var(--on-surface);line-height:1.2}
+
+/* ===== PROGRESS BARS ===== */
+.progress-item{margin-bottom:16px}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:13px;font-weight:500;color:var(--on-surface)}
+.progress-value{font-size:12px;font-weight:700;font-family:var(--font-headline)}
+.progress-bar{width:100%;height:6px;background:var(--surface-container-highest);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;border-radius:999px;transition:width 1.5s cubic-bezier(0.4,0,0.2,1);width:0}
+.progress-fill.cyan{background:var(--primary)}
+.progress-fill.purple{background:var(--secondary)}
+.progress-fill.teal{background:#00c9a7}
+.progress-fill.gray{background:var(--surface-container-highest)}
+
+/* ===== STAGE ITEMS - from ContactsScreen list items ===== */
+/* bg-surface-container-low border border-white/5 p-4 rounded-2xl flex items-center justify-between border-l-4 */
+.stage-item{background:var(--surface-container-low);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;transition:all 0.3s;border-left:4px solid var(--outline-variant);overflow:hidden}
+.stage-item:hover{border-color:rgba(29,155,240,0.2);border-left-color:var(--primary)}
+.stage-item.active-stage{border-left-color:var(--secondary)}
+.stage-item.completed{border-left-color:var(--primary)}
+.stage-top{display:flex;align-items:center;gap:16px}
+.stage-num{width:48px;height:48px;border-radius:50%;border:2px solid rgba(29,155,240,0.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-headline);font-size:16px;font-weight:700;color:var(--primary);flex-shrink:0;transition:all 0.3s}
+.stage-item:hover .stage-num{border-color:rgba(29,155,240,0.5)}
+.stage-num.done{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.stage-info{flex:1;min-width:0}
+.stage-name{font-family:var(--font-headline);font-weight:700;font-size:14px;color:var(--on-surface);margin-bottom:2px}
+.stage-desc{font-size:11px;color:var(--outline);line-height:1.4}
+.stage-time{font-size:10px;color:var(--outline);margin-top:2px;font-family:var(--font-headline)}
+.stage-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.stage-badge{font-size:9px;font-weight:700;padding:3px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:0.1em;border:1px solid}
+.stage-badge.done{background:rgba(29,155,240,0.1);color:var(--primary);border-color:rgba(29,155,240,0.2)}
+.stage-badge.active{background:rgba(255,68,170,0.1);color:var(--secondary);border-color:rgba(255,68,170,0.2)}
+.stage-badge.pending{background:rgba(113,118,123,0.1);color:var(--outline);border-color:rgba(113,118,123,0.2)}
+.stage-progress{width:100%;height:4px;background:var(--surface-container-highest);border-radius:999px;overflow:hidden;margin-top:12px}
+.stage-progress-fill{height:100%;border-radius:999px;transition:width 1.5s cubic-bezier(0.4,0,0.2,1)}
+.stage-detail{max-height:0;overflow:hidden;transition:max-height 0.4s ease,opacity 0.3s ease;opacity:0}
+.stage-detail.open{max-height:200px;opacity:1}
+.stage-detail-inner{padding-top:12px;border-top:1px solid rgba(255,255,255,0.05);margin-top:12px}
+.stage-detail-text{font-size:12px;color:var(--outline);line-height:1.6}
+
+/* ===== DATA LIST ITEMS - from MessagesScreen ===== */
+/* flex items-center gap-4 p-4 rounded-xl bg-surface-container-low hover:bg-surface-container-high border-l-4 border-primary */
+.data-item{display:flex;align-items:center;gap:16px;padding:16px;border-radius:12px;background:var(--surface-container-low);transition:all 0.3s;cursor:pointer;border-left:4px solid var(--primary);margin-bottom:12px}
+.data-item:hover{background:var(--surface-container-high)}
+.data-item-icon{width:56px;height:56px;border-radius:50%;border:2px solid rgba(29,155,240,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;overflow:hidden;background:var(--surface-container)}
+.data-item-icon svg{width:24px;height:24px;color:var(--primary)}
+.data-item-body{flex:1;min-width:0}
+.data-item-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+.data-item-name{font-weight:600;font-size:14px;color:var(--on-surface);display:flex;align-items:center;gap:8px}
+.data-item-time{font-size:12px;color:var(--outline);font-family:var(--font-headline)}
+.data-item-desc{font-size:13px;color:var(--outline);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.data-item-badge{width:20px;height:20px;background:var(--primary);color:var(--on-primary);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0}
+.data-item-badge.warn{background:rgba(255,68,170,0.2);color:var(--secondary)}
+
+/* ===== BUTTONS - from MeScreen/DiscoveryScreen ===== */
+/* bg-on-surface text-background px-8 py-3 rounded-full font-bold text-sm tracking-widest uppercase */
+.btn-primary{background:var(--on-surface);color:var(--background);padding:12px 32px;border-radius:999px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.15em;border:none;cursor:pointer;transition:all 0.3s;font-family:var(--font-headline);display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(255,255,255,0.05)}
+.btn-primary:hover{box-shadow:0 4px 30px rgba(255,255,255,0.1)}
+.btn-primary:active{transform:scale(0.95)}
+.btn-primary:disabled{opacity:0.2;cursor:not-allowed}
+.btn-accent{background:var(--primary);color:var(--on-primary);padding:12px 32px;border-radius:999px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.15em;border:none;cursor:pointer;transition:all 0.3s;font-family:var(--font-headline);display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(29,155,240,0.2)}
+.btn-accent:hover{box-shadow:0 4px 30px rgba(29,155,240,0.3)}
+.btn-accent:active{transform:scale(0.95)}
+.btn-secondary{background:var(--surface-container-highest);color:var(--on-surface);padding:10px 20px;border-radius:12px;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.15em;border:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:all 0.3s;font-family:var(--font-headline);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-secondary:hover{background:var(--surface-container-high)}
+.btn-secondary:active{transform:scale(0.95)}
+.btn-full{width:100%}
+
+/* ===== INPUT FIELDS - from SettingsScreens EditProfileScreen ===== */
+/* bg-surface-container-high border-none border-b-2 border-white/5 focus:border-primary rounded-xl px-5 py-4 text-sm */
+.input-group{margin-bottom:16px}
+.input-label{font-size:10px;text-transform:uppercase;letter-spacing:0.15em;color:var(--primary);font-weight:700;margin-bottom:8px;display:block}
+.input-field{width:100%;background:var(--surface-container-high);border:none;border-bottom:2px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;color:var(--on-surface);font-size:14px;font-family:var(--font-body);font-weight:500;outline:none;transition:all 0.3s}
+.input-field:focus{border-bottom-color:var(--primary)}
+.input-field::placeholder{color:rgba(113,118,123,0.4)}
+
+/* ===== TOGGLE SWITCH - from SettingsScreen ===== */
+/* w-10 h-5 rounded-full bg-primary / bg-white/10 */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-info{display:flex;align-items:center;gap:16px}
+.toggle-icon{width:40px;height:40px;border-radius:12px;background:var(--surface-container-highest);display:flex;align-items:center;justify-content:center;color:var(--outline);transition:all 0.3s}
+.toggle-row:hover .toggle-icon{color:var(--primary)}
+.toggle-label{font-size:14px;font-weight:700;color:var(--on-surface)}
+.toggle-desc{font-size:11px;color:var(--outline);margin-top:2px}
+.toggle-switch{width:40px;height:20px;border-radius:10px;background:rgba(255,255,255,0.1);position:relative;cursor:pointer;transition:all 0.3s;flex-shrink:0}
+.toggle-switch.on{background:var(--primary)}
+.toggle-switch::after{content:'';position:absolute;top:4px;left:4px;width:12px;height:12px;border-radius:50%;background:#fff;transition:all 0.3s}
+.toggle-switch.on::after{left:24px}
+
+/* ===== SETTINGS LIST - from MeScreen settings ===== */
+/* bg-surface-container-high/40 rounded-xl divide-y divide-white/5 border border-white/5 */
+.settings-list{background:rgba(26,26,26,0.4);border-radius:12px;border:1px solid rgba(255,255,255,0.05);overflow:hidden}
+.settings-item{display:flex;align-items:center;justify-content:space-between;padding:20px;cursor:pointer;transition:all 0.3s;border-bottom:1px solid rgba(255,255,255,0.05)}
+.settings-item:last-child{border-bottom:none}
+.settings-item:hover{background:var(--surface-container-high)}
+.settings-item-left{display:flex;align-items:center;gap:16px}
+.settings-item-icon{width:40px;height:40px;border-radius:12px;background:var(--surface-container-highest);display:flex;align-items:center;justify-content:center;color:var(--outline);transition:all 0.3s}
+.settings-item:hover .settings-item-icon{color:var(--primary)}
+.settings-item-label{font-size:14px;font-weight:500}
+.settings-item-arrow{color:var(--outline)}
+
+/* ===== BAR CHART ===== */
+.bar-chart{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:12px}
+.bar-label{font-size:11px;color:var(--outline);width:70px;text-align:right;flex-shrink:0;font-weight:500}
+.bar-track{flex:1;height:8px;background:var(--surface-container-highest);border-radius:999px;overflow:hidden}
+.bar-fill{height:100%;border-radius:999px;transition:width 1.5s cubic-bezier(0.4,0,0.2,1)}
+.bar-value{font-size:10px;color:var(--on-surface-variant);font-family:var(--font-headline);font-weight:600;width:40px;flex-shrink:0}
+
+/* ===== ABOUT CARD ===== */
+.about-card{background:var(--surface-container-low);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:20px;text-align:center}
+.about-name{font-family:var(--font-headline);font-size:18px;font-weight:700;margin-bottom:4px}
+.about-ver{font-size:11px;color:var(--outline);font-family:var(--font-headline)}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;top:78px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surface-container-high);color:var(--on-surface);padding:12px 24px;border-radius:12px;font-size:13px;font-weight:500;border:1px solid rgba(255,255,255,0.05);box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:100;opacity:0;transition:all 0.3s;pointer-events:none;max-width:380px;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(29,155,240,0.3);color:var(--primary)}
+.toast.info{border-color:rgba(113,118,123,0.3)}
+
+/* ===== DATA VIS CARDS - from DiscoveryScreen post cards ===== */
+/* bg-surface-container-lowest rounded-2xl p-5 border border-white/5 shadow-lg */
+.vis-card{background:var(--surface-container-lowest);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.05);box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:all 0.3s;position:relative;overflow:hidden}
+.vis-card:hover{border-color:rgba(29,155,240,0.2)}
+.vis-card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.vis-card-avatar{width:48px;height:48px;border-radius:50%;border:2px solid rgba(29,155,240,0.3);display:flex;align-items:center;justify-content:center;background:rgba(29,155,240,0.1);color:var(--primary);flex-shrink:0}
+.vis-card-avatar svg{width:22px;height:22px}
+.vis-card-title{font-family:var(--font-headline);font-weight:700;font-size:14px;color:var(--on-surface)}
+.vis-card-sub{font-size:10px;color:var(--outline);font-family:var(--font-headline);text-transform:uppercase;letter-spacing:0.1em;margin-top:2px}
+.vis-card-actions{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05);margin-top:16px}
+.vis-action{display:flex;align-items:center;gap:8px;color:var(--outline);font-size:10px;font-weight:700;cursor:pointer;transition:color 0.2s;background:none;border:none;padding:4px 0}
+.vis-action:hover{color:var(--primary)}
+.vis-action svg{width:18px;height:18px}
+
+/* ===== GROUP HEADER - from ContactsScreen section headers ===== */
+.group-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:0 8px}
+.group-header-title{font-size:10px;text-transform:uppercase;font-weight:700;letter-spacing:0.2em}
+.group-header-line{width:32px;height:1px;background:var(--outline)}
+
+/* ===== QUICK ACTION CARDS - from MeScreen grid cards ===== */
+/* bg-surface-container-high/40 rounded-xl p-6 border border-white/5 hover:bg-surface-container-high */
+.quick-card{background:rgba(26,26,26,0.4);border-radius:12px;padding:24px;border:1px solid rgba(255,255,255,0.05);transition:all 0.3s;cursor:pointer}
+.quick-card:hover{background:var(--surface-container-high);border-color:rgba(29,155,240,0.2)}
+.quick-card-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:20px}
+.quick-card-title{font-size:18px;font-family:var(--font-headline);font-weight:600;display:flex;align-items:center;gap:8px;color:var(--on-surface)}
+.quick-card-icon{color:var(--primary)}
+
+/* ===== Utility ===== */
+.flex-center{display:flex;align-items:center;justify-content:center}
+.gap-3{gap:12px}
+.gap-4{gap:16px}
+.mb-4{margin-bottom:16px}
+.mb-6{margin-bottom:24px}
+.mb-8{margin-bottom:32px}
+.mt-4{margin-top:16px}
+.mt-6{margin-top:24px}
+.mt-8{margin-top:32px}
+.text-center{text-align:center}
+.text-primary{color:var(--primary)}
+.text-outline{color:var(--outline)}
+.text-sm{font-size:13px}
+.text-xs{font-size:11px}
+.font-headline{font-family:var(--font-headline)}
+.font-bold{font-weight:700}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.flex-row{display:flex;flex-direction:row;align-items:center}
+.flex-col{display:flex;flex-direction:column}
+.flex-1{flex:1}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- ===== HEADER - exact match from TranscendPartner screens ===== -->
+  <div class="header">
+    <div class="header-left">
+      <button class="header-btn">
+        <!-- Layers icon (similar to TranscendPartner's Menu) -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </button>
+      <h1 class="header-title">TwinCapture</h1>
+    </div>
+    <div class="header-right">
+      <button class="header-btn">
+        <!-- Plus icon (from MeScreen) -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <span class="demo-badge">单机演示</span>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="main">
+    <!-- ===== TAB 1: HOME - from MeScreen layout ===== -->
+    <div id="tab-home" class="tab-panel active">
+      <!-- Welcome Card (from MeScreen header info card) -->
+      <div class="welcome-card mb-6">
+        <div style="display:flex;align-items:center;gap:20px">
+          <div class="avatar-ring">
+            <div class="dh-preview">
+              <div class="dh-inner">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h2 class="welcome-title">数字人工厂</h2>
+            <p class="welcome-sub">构建你的数字孪生体<br>8维度数据采集与建模</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat Cards Row (from MeScreen stats: 监护信用 + 合作伙伴) -->
+      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:32px">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <p class="stat-label">采集进度</p>
+            <p class="stat-value">20%</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <p class="stat-label">预计用时</p>
+            <p class="stat-value">3.5h</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div>
+            <p class="stat-label">已完成</p>
+            <p class="stat-value">1/8</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions (from MeScreen 我的动态 + 我的收藏 grid) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px">
+        <div class="quick-card" onclick="switchTab('capture')">
+          <div class="quick-card-header">
+            <h3 class="quick-card-title">
+              <svg class="quick-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              继续采集
+            </h3>
+          </div>
+          <p style="font-size:12px;color:var(--outline);line-height:1.5">当前：表情映射<br>进度 45%</p>
+        </div>
+        <div class="quick-card" onclick="switchTab('data')">
+          <div class="quick-card-header">
+            <h3 class="quick-card-title">
+              <svg class="quick-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              查看数据
+            </h3>
+          </div>
+          <p style="font-size:12px;color:var(--outline);line-height:1.5">已采集 256MB<br>8 个维度</p>
+        </div>
+      </div>
+
+      <!-- Progress Section -->
+      <div class="section-title">数据采集进度</div>
+      <div class="card mb-6" id="progress-card">
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label">外观扫描</span>
+            <span class="progress-value text-primary">80%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill cyan" data-width="80"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label">表情映射</span>
+            <span class="progress-value" style="color:var(--secondary)">45%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill purple" data-width="45"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label">声纹录制</span>
+            <span class="progress-value" style="color:#00c9a7">30%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill teal" data-width="30"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label">动作捕捉</span>
+            <span class="progress-value text-primary">10%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill cyan" data-width="10"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label">语言建模</span>
+            <span class="progress-value text-outline">0%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill gray" data-width="0"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label">性格画像</span>
+            <span class="progress-value text-outline">0%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill gray" data-width="0"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label">思维模式</span>
+            <span class="progress-value text-outline">0%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill gray" data-width="0"></div></div>
+        </div>
+        <div class="progress-item" style="margin-bottom:0">
+          <div class="progress-header">
+            <span class="progress-label">心理特征</span>
+            <span class="progress-value text-outline">0%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill gray" data-width="0"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TAB 2: CAPTURE - from ContactsScreen layout ===== -->
+    <div id="tab-capture" class="tab-panel">
+      <!-- Search Bar (from ContactsScreen search) -->
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="搜索采集阶段..." id="capture-search" oninput="filterStages(this.value)">
+      </div>
+
+      <!-- Group: Completed (from ContactsScreen AI Partners section) -->
+      <div class="group-header">
+        <span class="group-header-title" style="color:var(--primary)">已完成 (Completed)</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--outline)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      </div>
+      <div id="stages-completed"></div>
+
+      <!-- Group: In Progress -->
+      <div class="group-header" style="margin-top:24px">
+        <span class="group-header-title" style="color:var(--secondary)">进行中 (In Progress)</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--outline)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      </div>
+      <div id="stages-active"></div>
+
+      <!-- Group: Pending -->
+      <div class="group-header" style="margin-top:24px">
+        <span class="group-header-title" style="color:var(--outline)">未开始 (Pending)</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--outline)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      </div>
+      <div id="stages-pending"></div>
+
+      <div style="margin-top:24px">
+        <button class="btn-accent btn-full" onclick="showToast('采集流程已启动','success')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          开始采集
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== TAB 3: DATA - from MessagesScreen layout ===== -->
+    <div id="tab-data" class="tab-panel">
+      <!-- Search Bar (from MessagesScreen search) -->
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="搜索数据维度...">
+      </div>
+
+      <!-- Group: Active Data (from MessagesScreen AI section) -->
+      <div class="group-header">
+        <span class="group-header-title" style="opacity:0.5">活跃维度 (Active)</span>
+        <div style="width:32px;height:1px;background:var(--outline)"></div>
+      </div>
+      <div id="data-active-list"></div>
+
+      <!-- Group: All Data (from MessagesScreen Human section) -->
+      <div class="group-header" style="margin-top:24px">
+        <span class="group-header-title" style="opacity:0.5">全部维度 (All)</span>
+        <div style="width:32px;height:1px;background:var(--outline)"></div>
+      </div>
+      <div id="data-all-list"></div>
+
+      <!-- Data Distribution (from DiscoveryScreen post cards) -->
+      <div class="section-title" style="margin-top:32px">数据可视化</div>
+      <div class="vis-card mb-6">
+        <div class="vis-card-header">
+          <div class="vis-card-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          </div>
+          <div>
+            <div class="vis-card-title">采集数据分布</div>
+            <div class="vis-card-sub">总计 256 MB</div>
+          </div>
+        </div>
+        <div class="bar-chart">
+          <div class="bar-row"><span class="bar-label">外观扫描</span><div class="bar-track"><div class="bar-fill" data-width="80" style="background:var(--primary)"></div></div><span class="bar-value">102MB</span></div>
+          <div class="bar-row"><span class="bar-label">表情映射</span><div class="bar-track"><div class="bar-fill" data-width="58" style="background:var(--secondary)"></div></div><span class="bar-value">74MB</span></div>
+          <div class="bar-row"><span class="bar-label">声纹录制</span><div class="bar-track"><div class="bar-fill" data-width="38" style="background:#00c9a7"></div></div><span class="bar-value">48MB</span></div>
+          <div class="bar-row"><span class="bar-label">动作捕捉</span><div class="bar-track"><div class="bar-fill" data-width="13" style="background:var(--primary)"></div></div><span class="bar-value">16MB</span></div>
+          <div class="bar-row"><span class="bar-label">语言建模</span><div class="bar-track"><div class="bar-fill" data-width="8" style="background:var(--surface-container-highest)"></div></div><span class="bar-value">10MB</span></div>
+          <div class="bar-row"><span class="bar-label">性格画像</span><div class="bar-track"><div class="bar-fill" data-width="4" style="background:var(--surface-container-highest)"></div></div><span class="bar-value">4MB</span></div>
+          <div class="bar-row"><span class="bar-label">思维模式</span><div class="bar-track"><div class="bar-fill" data-width="2" style="background:var(--surface-container-highest)"></div></div><span class="bar-value">1MB</span></div>
+          <div class="bar-row"><span class="bar-label">心理特征</span><div class="bar-track"><div class="bar-fill" data-width="1" style="background:var(--surface-container-highest)"></div></div><span class="bar-value">1MB</span></div>
+        </div>
+        <div class="vis-card-actions">
+          <button class="vis-action" onclick="showToast('数据导出已开始...','success')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            导出
+          </button>
+          <button class="vis-action" onclick="showToast('GitHub 备份已同步','success')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            备份
+          </button>
+          <button class="vis-action" onclick="showToast('数据已加密','success')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            加密
+          </button>
+          <button class="vis-action" onclick="showToast('分享链接已复制','info')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            分享
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TAB 4: SETTINGS - from SettingsScreen layout ===== -->
+    <div id="tab-settings" class="tab-panel">
+      <!-- API Config (from EditProfileScreen input fields) -->
+      <div class="section-title">API 配置</div>
+      <div class="card mb-6">
+        <div class="input-group">
+          <label class="input-label">Endpoint</label>
+          <input class="input-field" type="text" placeholder="https://api.example.com/v1" value="https://api.twincapture.io/v1">
+        </div>
+        <div class="input-group">
+          <label class="input-label">API Key</label>
+          <input class="input-field" type="password" placeholder="sk-xxxxxxxxxxxxxxxx" value="sk-tc-demo-key-2024">
+        </div>
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Model</label>
+          <input class="input-field" type="text" placeholder="model name" value="twin-capture-v1.0">
+        </div>
+      </div>
+
+      <!-- Privacy Settings (from SettingsScreen toggle layout) -->
+      <div class="section-title">隐私设置</div>
+      <div class="card mb-6" style="padding:4px 20px">
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </div>
+            <div>
+              <div class="toggle-label">本地存储</div>
+              <div class="toggle-desc">数据仅保存在本地设备</div>
+            </div>
+          </div>
+          <div class="toggle-switch on" onclick="toggleSwitch(this)"></div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div>
+              <div class="toggle-label">端到端加密</div>
+              <div class="toggle-desc">AES-256 加密传输与存储</div>
+            </div>
+          </div>
+          <div class="toggle-switch on" onclick="toggleSwitch(this)"></div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div>
+              <div class="toggle-label">匿名模式</div>
+              <div class="toggle-desc">隐藏身份信息进行采集</div>
+            </div>
+          </div>
+          <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+        </div>
+      </div>
+
+      <!-- Settings Menu (from MeScreen settings list) -->
+      <div class="section-title">系统设置</div>
+      <div class="settings-list mb-6">
+        <div class="settings-item" onclick="showToast('账户设置','info')">
+          <div class="settings-item-left">
+            <div class="settings-item-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span class="settings-item-label">账户设置</span>
+          </div>
+          <svg class="settings-item-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="settings-item" onclick="showToast('存储管理','info')">
+          <div class="settings-item-left">
+            <div class="settings-item-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <span class="settings-item-label">存储管理</span>
+          </div>
+          <svg class="settings-item-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="settings-item" onclick="showToast('关于我们','info')">
+          <div class="settings-item-left">
+            <div class="settings-item-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </div>
+            <span class="settings-item-label">关于我们</span>
+          </div>
+          <svg class="settings-item-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+      <!-- About (from SettingsScreen footer) -->
+      <div class="about-card">
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span class="about-name font-headline">TwinCapture</span>
+        </div>
+        <div class="about-ver">数字人工工厂 v1.0.0</div>
+        <div style="font-size:10px;font-weight:700;color:var(--outline);text-transform:uppercase;letter-spacing:0.4em;margin-top:12px">Transcend Ecosystem Module</div>
+        <div style="font-size:11px;color:var(--outline);margin-top:8px;line-height:1.6">
+          构建、训练、部署你的数字孪生体
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BOTTOM NAV - exact match from Navigation.tsx BottomNavBar ===== -->
+  <!-- h-20 bg-background/80 backdrop-blur-xl shadow-[0_-20px_40px_rgba(0,0,0,0.4)] border-t border-white/5 -->
+  <div class="bottom-nav">
+    <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
+      <!-- Home icon (Compass-style from TranscendPartner) -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>首页</span>
+    </button>
+    <button class="nav-item" data-tab="capture" onclick="switchTab('capture')">
+      <!-- Capture icon (Camera-style) -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <span>采集</span>
+    </button>
+    <button class="nav-item" data-tab="data" onclick="switchTab('data')">
+      <!-- Data icon (Database-style) -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      <span>数据</span>
+    </button>
+    <button class="nav-item" data-tab="settings" onclick="switchTab('settings')">
+      <!-- Settings icon (Cog-style from TranscendPartner) -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>设置</span>
+    </button>
+  </div>
+</div>
+
+<script>
+// ===== Stage data =====
+const stages = [
+  { id:1, name:'外观扫描', desc:'3D面部建模与身体扫描', time:'约 15 分钟', progress:80, status:'completed', detail:'使用结构光扫描仪进行360度面部与身体扫描，生成高精度3D模型。需要正面、侧面、背面各30秒静态扫描。' },
+  { id:2, name:'表情映射', desc:'52种基础表情数据采集', time:'约 20 分钟', progress:45, status:'active', detail:'通过摄像头捕捉52种基础面部表情（FACS系统），包括6种基本表情和46种复合表情。需要跟随屏幕提示做出对应表情。' },
+  { id:3, name:'声纹录制', desc:'语音样本与声纹特征提取', time:'约 25 分钟', progress:30, status:'active', detail:'录制200+句标准语音样本，覆盖不同情感、语速、音调。同时采集声纹特征用于语音合成训练。' },
+  { id:4, name:'动作捕捉', desc:'全身动作与手势数据采集', time:'约 30 分钟', progress:10, status:'active', detail:'穿戴动捕设备，完成行走、坐立、手势等30组标准动作序列。数据用于驱动数字人的肢体动作。' },
+  { id:5, name:'语言建模', desc:'语言风格与表达习惯学习', time:'约 40 分钟', progress:0, status:'pending', detail:'通过对话式交互采集语言样本，分析用词偏好、句式结构、口头禅等个人语言特征。' },
+  { id:6, name:'性格画像', desc:'性格特质与行为模式分析', time:'约 20 分钟', progress:0, status:'pending', detail:'完成性格评估问卷（Big Five模型），结合历史行为数据构建性格画像。' },
+  { id:7, name:'思维模式', desc:'决策逻辑与思维路径建模', time:'约 30 分钟', progress:0, status:'pending', detail:'通过情景模拟测试分析决策偏好、风险评估模式、创造性思维路径等认知特征。' },
+  { id:8, name:'心理特征', desc:'情感模式与心理韧性评估', time:'约 25 分钟', progress:0, status:'pending', detail:'评估情感触发模式、压力应对策略、共情能力等心理特征，用于数字人的情感响应系统。' }
+];
+
+// ===== Data items (for MessagesScreen-style list) =====
+const dataItems = [
+  { name:'外观扫描', desc:'3D模型数据 102MB', time:'2分钟前', size:'102MB', status:'ok', icon:'scan' },
+  { name:'表情映射', desc:'FACS数据 74MB', time:'进行中', size:'74MB', status:'warn', icon:'smile' },
+  { name:'声纹录制', desc:'音频样本 48MB', time:'进行中', size:'48MB', status:'warn', icon:'mic' },
+  { name:'动作捕捉', desc:'动捕数据 16MB', time:'进行中', size:'16MB', status:'warn', icon:'activity' },
+  { name:'语言建模', desc:'文本数据 10MB', time:'待采集', size:'10MB', status:'pending', icon:'type' },
+  { name:'性格画像', desc:'问卷数据 4MB', time:'待采集', size:'4MB', status:'pending', icon:'user' },
+  { name:'思维模式', desc:'测试数据 1MB', time:'待采集', size:'1MB', status:'pending', icon:'brain' },
+  { name:'心理特征', desc:'评估数据 1MB', time:'待采集', size:'1MB', status:'pending', icon:'heart' },
+];
+
+const dataIcons = {
+  scan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+  smile: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+  mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>',
+  activity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+  type: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
+  user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  brain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2z"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
+};
+
+// ===== Render stages grouped =====
+function renderStages(filter = '') {
+  const filtered = stages.filter(s => s.name.toLowerCase().includes(filter.toLowerCase()));
+  const completed = filtered.filter(s => s.status === 'completed');
+  const active = filtered.filter(s => s.status === 'active');
+  const pending = filtered.filter(s => s.status === 'pending');
+
+  document.getElementById('stages-completed').innerHTML = completed.map(renderStageItem).join('');
+  document.getElementById('stages-active').innerHTML = active.map(renderStageItem).join('');
+  document.getElementById('stages-pending').innerHTML = pending.map(renderStageItem).join('');
+
+  if (filter) {
+    animateProgressBars('#stages-completed .stage-progress-fill, #stages-active .stage-progress-fill, #stages-pending .stage-progress-fill');
+  }
+}
+
+function renderStageItem(s) {
+  const statusClass = s.status === 'completed' ? 'completed' : s.status === 'active' ? 'active-stage' : '';
+  const numClass = s.status === 'completed' ? 'done' : '';
+  const badgeClass = s.status;
+  const badgeText = s.status === 'completed' ? '已完成' : s.status === 'active' ? '进行中' : '未开始';
+  const barColor = s.status === 'completed' ? 'var(--primary)' : s.status === 'active' ? 'var(--secondary)' : 'var(--surface-container-highest)';
+  return `
+    <div class="stage-item ${statusClass}" onclick="toggleStage(this)">
+      <div class="stage-top">
+        <div class="stage-num ${numClass}">${s.status === 'completed' ? '&#10003;' : s.id}</div>
+        <div class="stage-info">
+          <div class="stage-name">${s.name}</div>
+          <div class="stage-desc">${s.desc}</div>
+          <div class="stage-time">${s.time}</div>
+        </div>
+        <div class="stage-right">
+          <span class="stage-badge ${badgeClass}">${badgeText}</span>
+        </div>
+      </div>
+      <div class="stage-progress"><div class="stage-progress-fill" data-width="${s.progress}" style="background:${barColor}"></div></div>
+      <div class="stage-detail">
+        <div class="stage-detail-text">${s.detail}</div>
+      </div>
+    </div>
+  `;
+}
+
+// ===== Render data list (MessagesScreen style) =====
+function renderDataList() {
+  const activeItems = dataItems.filter(d => d.status !== 'pending');
+  const allItems = dataItems;
+
+  document.getElementById('data-active-list').innerHTML = activeItems.map(d => renderDataItem(d, true)).join('');
+  document.getElementById('data-all-list').innerHTML = allItems.map(d => renderDataItem(d, false)).join('');
+}
+
+function renderDataItem(d, isActive) {
+  const borderClass = isActive ? 'border-l-primary' : 'border-l-outline/20';
+  const bgClass = isActive ? 'bg-surface-container-low' : '';
+  const badgeHtml = d.status === 'warn'
+    ? '<div class="data-item-badge warn">!</div>'
+    : d.status === 'ok'
+      ? '<div class="data-item-badge">&#10003;</div>'
+      : '';
+  return `
+    <div class="data-item ${borderClass}" onclick="showToast('${d.name}: ${d.size}','info')">
+      <div class="data-item-icon">${dataIcons[d.icon]}</div>
+      <div class="data-item-body">
+        <div class="data-item-top">
+          <span class="data-item-name">${d.name}</span>
+          <span class="data-item-time">${d.time}</span>
+        </div>
+        <div class="data-item-desc">${d.desc}</div>
+      </div>
+      ${badgeHtml}
+    </div>
+  `;
+}
+
+// ===== Tab switching =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector(`.nav-item[data-tab="${tab}"]`).classList.add('active');
+  // Animate progress bars when switching to relevant tabs
+  if (tab === 'home') animateProgressBars('#progress-card .progress-fill');
+  if (tab === 'capture') animateProgressBars('#stages-completed .stage-progress-fill, #stages-active .stage-progress-fill, #stages-pending .stage-progress-fill');
+  if (tab === 'data') {
+    animateProgressBars('.bar-fill');
+  }
+}
+
+// ===== Filter stages =====
+function filterStages(query) {
+  renderStages(query);
+}
+
+// ===== Toggle stage detail =====
+function toggleStage(el) {
+  const detail = el.querySelector('.stage-detail');
+  detail.classList.toggle('open');
+}
+
+// ===== Toggle switch =====
+function toggleSwitch(el) {
+  el.classList.toggle('on');
+  const label = el.closest('.toggle-row').querySelector('.toggle-label').textContent;
+  const isOn = el.classList.contains('on');
+  showToast(`${label}已${isOn ? '开启' : '关闭'}`, isOn ? 'success' : 'info');
+}
+
+// ===== Toast =====
+let toastTimer;
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + (type || '') + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 2500);
+}
+
+// ===== Animate progress bars =====
+function animateProgressBars(selector) {
+  setTimeout(() => {
+    document.querySelectorAll(selector).forEach(bar => {
+      const w = bar.getAttribute('data-width');
+      bar.style.width = w + '%';
+    });
+  }, 100);
+}
+
+// ===== Init =====
+renderStages();
+renderDataList();
+animateProgressBars('#progress-card .progress-fill');
+</script>
+</body>
+</html>

@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TranscendPartner - AI社交网络</title>
+<style>
+:root {
+  --bg-primary: #0c1225;
+  --bg-secondary: #111a33;
+  --bg-card: #162040;
+  --bg-input: #1a2545;
+  --cyan: #00d4ff;
+  --purple: #a855f7;
+  --gradient: linear-gradient(135deg, #00d4ff, #a855f7);
+  --text-primary: #e8edf5;
+  --text-secondary: #8892a8;
+  --text-muted: #556080;
+  --border: #1e2d50;
+  --danger: #ff4757;
+  --shadow: 0 4px 20px rgba(0,0,0,0.3);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --tab-height: 60px;
+  --header-height: 56px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: #060a15;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ===== Phone Frame ===== */
+.phone-frame {
+  width: 100%;
+  max-width: 430px;
+  height: 100vh;
+  max-height: 932px;
+  background: var(--bg-primary);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0,212,255,0.08), 0 0 120px rgba(168,85,247,0.05);
+}
+
+@media (min-height: 933px) {
+  .phone-frame { border-radius: 24px; height: 932px; }
+}
+
+/* ===== Splash Screen ===== */
+.splash-screen {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.splash-screen.hide {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+
+.splash-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  background: var(--gradient);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 36px;
+  font-weight: 800;
+  color: #fff;
+  animation: splashPulse 1.5s ease-in-out infinite;
+  box-shadow: 0 8px 32px rgba(0,212,255,0.3);
+}
+
+@keyframes splashPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 8px 32px rgba(0,212,255,0.3); }
+  50% { transform: scale(1.08); box-shadow: 0 12px 48px rgba(168,85,247,0.4); }
+}
+
+.splash-title {
+  margin-top: 20px;
+  font-size: 22px;
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.splash-subtitle {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: 2px;
+}
+
+.splash-loader {
+  margin-top: 40px;
+  width: 120px;
+  height: 3px;
+  background: var(--bg-card);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.splash-loader-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--gradient);
+  border-radius: 2px;
+  animation: splashLoad 1.8s ease-in-out forwards;
+}
+
+@keyframes splashLoad {
+  0% { width: 0%; }
+  60% { width: 70%; }
+  100% { width: 100%; }
+}
+
+/* ===== App Container ===== */
+.app-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Header ===== */
+.header {
+  height: var(--header-height);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.header-title span {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.header-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.header-btn:hover { background: var(--bg-input); color: var(--cyan); }
+
+/* ===== Search Bar ===== */
+.search-bar {
+  padding: 10px 16px;
+  flex-shrink: 0;
+}
+
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-input);
+  border-radius: 20px;
+  padding: 8px 14px;
+  gap: 8px;
+  border: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.search-input-wrap:focus-within { border-color: var(--cyan); }
+
+.search-icon { color: var(--text-muted); font-size: 14px; flex-shrink: 0; }
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+}
+
+.search-input::placeholder { color: var(--text-muted); }
+
+/* ===== Tab Content ===== */
+.tab-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.tab-page {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 20px;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-page.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.tab-page::-webkit-scrollbar { display: none; }
+
+/* ===== Post Card ===== */
+.post-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  margin: 0 12px 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.post-card:hover { border-color: rgba(0,212,255,0.15); }
+
+.post-header {
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.avatar-cyan { background: linear-gradient(135deg, #00d4ff, #0099cc); }
+.avatar-purple { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+.avatar-pink { background: linear-gradient(135deg, #f472b6, #ec4899); }
+.avatar-green { background: linear-gradient(135deg, #34d399, #10b981); }
+.avatar-orange { background: linear-gradient(135deg, #fb923c, #f97316); }
+.avatar-blue { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+
+.post-user-info { flex: 1; }
+
+.post-username {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.post-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.post-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(0,212,255,0.1);
+  color: var(--cyan);
+  font-weight: 500;
+}
+
+.post-body { padding: 0 14px 12px; }
+
+.post-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  white-space: pre-line;
+}
+
+.post-text.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-expand-btn {
+  color: var(--cyan);
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 6px;
+  display: inline-block;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.post-expand-btn:hover { text-decoration: underline; }
+
+.post-image {
+  width: calc(100% - 28px);
+  margin: 0 14px 12px;
+  height: 180px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  position: relative;
+  overflow: hidden;
+}
+
+.post-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(168,85,247,0.05));
+}
+
+.post-image-icon {
+  font-size: 32px;
+  opacity: 0.4;
+  z-index: 1;
+}
+
+.post-actions {
+  display: flex;
+  border-top: 1px solid var(--border);
+  padding: 4px 0;
+}
+
+.post-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 0;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.post-action-btn:hover { color: var(--cyan); }
+.post-action-btn.liked { color: var(--danger); }
+.post-action-btn.liked .like-icon { animation: likeAnim 0.4s ease; }
+
+@keyframes likeAnim {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* ===== FAB Button ===== */
+.fab-btn {
+  position: absolute;
+  bottom: 80px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--gradient);
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fab-btn:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,212,255,0.4); }
+.fab-btn:active { transform: scale(0.95); }
+
+/* ===== Message List ===== */
+.msg-list { padding: 0 12px; }
+
+.msg-item {
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  gap: 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.msg-item:hover { background: var(--bg-card); }
+
+.msg-item + .msg-item { margin-top: 2px; }
+
+.msg-avatar-wrap { position: relative; flex-shrink: 0; }
+
+.msg-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-primary);
+}
+
+.msg-info { flex: 1; min-width: 0; }
+
+.msg-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.msg-preview {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.msg-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+/* ===== Contact List ===== */
+.contact-section-title {
+  padding: 12px 16px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.contact-item:hover { background: var(--bg-card); }
+
+.contact-info { flex: 1; }
+
+.contact-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.contact-signature {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-arrow { color: var(--text-muted); font-size: 14px; }
+
+/* ===== Profile Page ===== */
+.profile-card {
+  margin: 16px;
+  padding: 24px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: var(--gradient);
+  opacity: 0.15;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+  border: 3px solid var(--bg-card);
+}
+
+.profile-name {
+  font-size: 20px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.profile-bio {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-item { text-align: center; }
+
+.stat-num {
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ===== Menu List ===== */
+.menu-list {
+  margin: 0 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid var(--border);
+}
+
+.menu-item:last-child { border-bottom: none; }
+.menu-item:hover { background: var(--bg-input); }
+
+.menu-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.menu-icon-cyan { background: rgba(0,212,255,0.1); }
+.menu-icon-purple { background: rgba(168,85,247,0.1); }
+.menu-icon-green { background: rgba(52,211,153,0.1); }
+.menu-icon-orange { background: rgba(251,146,60,0.1); }
+
+.menu-text {
+  flex: 1;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.menu-arrow { color: var(--text-muted); font-size: 14px; }
+
+/* ===== Bottom Tab Bar ===== */
+.tab-bar {
+  height: var(--tab-height);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 10px;
+  cursor: pointer;
+  transition: color 0.2s;
+  position: relative;
+  padding-top: 6px;
+}
+
+.tab-btn.active { color: var(--cyan); }
+
+.tab-btn-icon {
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.tab-btn.active .tab-btn-icon { transform: scale(1.1); }
+
+.tab-btn-label { font-weight: 500; }
+
+.tab-badge {
+  position: absolute;
+  top: 2px;
+  right: 50%;
+  margin-right: -18px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== SVG Icons (inline) ===== */
+.icon-svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: -0.125em;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.post-card:nth-child(1) { animation-delay: 0.05s; }
+.post-card:nth-child(2) { animation-delay: 0.1s; }
+.post-card:nth-child(3) { animation-delay: 0.15s; }
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 0; height: 0; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame" id="app">
+  <!-- Splash Screen -->
+  <div class="splash-screen" id="splash">
+    <div class="splash-logo">T</div>
+    <div class="splash-title">TranscendPartner</div>
+    <div class="splash-subtitle">AI SOCIAL NETWORK</div>
+    <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+  </div>
+
+  <!-- App -->
+  <div class="app-container" id="appContainer" style="opacity:0;">
+    <!-- Header -->
+    <div class="header" id="mainHeader">
+      <div class="header-title"><span>TranscendPartner</span></div>
+      <div class="header-actions">
+        <button class="header-btn" title="通知">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+
+      <!-- Tab 1: Discovery -->
+      <div class="tab-page active" id="page-discovery">
+        <div class="search-bar">
+          <div class="search-input-wrap">
+            <span class="search-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input class="search-input" type="text" placeholder="搜索动态、话题、用户...">
+          </div>
+        </div>
+
+        <div id="postList"></div>
+
+        <button class="fab-btn" id="fabBtn" title="发布动态">+</button>
+      </div>
+
+      <!-- Tab 2: Messages -->
+      <div class="tab-page" id="page-messages">
+        <div class="header" style="border-bottom:1px solid var(--border);">
+          <div class="header-title">消息</div>
+          <div class="header-actions">
+            <button class="header-btn" title="新建消息">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="msg-list" id="msgList"></div>
+      </div>
+
+      <!-- Tab 3: Contacts -->
+      <div class="tab-page" id="page-contacts">
+        <div class="header" style="border-bottom:1px solid var(--border);">
+          <div class="header-title">通讯录</div>
+        </div>
+        <div class="search-bar">
+          <div class="search-input-wrap">
+            <span class="search-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input class="search-input" type="text" placeholder="搜索联系人...">
+          </div>
+        </div>
+        <div id="contactList"></div>
+      </div>
+
+      <!-- Tab 4: Me -->
+      <div class="tab-page" id="page-me">
+        <div class="profile-card">
+          <div class="profile-avatar avatar-cyan">旅</div>
+          <div class="profile-name">数字旅者</div>
+          <div class="profile-bio">探索数字孪生世界的先行者 | AI社交爱好者</div>
+          <div class="profile-stats">
+            <div class="stat-item"><div class="stat-num">128</div><div class="stat-label">动态</div></div>
+            <div class="stat-item"><div class="stat-num">1.2k</div><div class="stat-label">关注</div></div>
+            <div class="stat-item"><div class="stat-num">856</div><div class="stat-label">粉丝</div></div>
+          </div>
+        </div>
+        <div class="menu-list">
+          <div class="menu-item">
+            <div class="menu-icon menu-icon-cyan">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            </div>
+            <div class="menu-text">我的动态</div>
+            <span class="menu-arrow">&#8250;</span>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon menu-icon-purple">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="menu-text">我的收藏</div>
+            <span class="menu-arrow">&#8250;</span>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon menu-icon-green">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+            <div class="menu-text">数字名片</div>
+            <span class="menu-arrow">&#8250;</span>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon menu-icon-orange">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+            <div class="menu-text">设置</div>
+            <span class="menu-arrow">&#8250;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Tab Bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="discovery">
+        <span class="tab-btn-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </span>
+        <span class="tab-btn-label">广场</span>
+      </button>
+      <button class="tab-btn" data-tab="messages">
+        <span class="tab-btn-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </span>
+        <span class="tab-btn-label">消息</span>
+        <span class="tab-badge">3</span>
+      </button>
+      <button class="tab-btn" data-tab="contacts">
+        <span class="tab-btn-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <span class="tab-btn-label">通讯录</span>
+      </button>
+      <button class="tab-btn" data-tab="me">
+        <span class="tab-btn-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+        <span class="tab-btn-label">我的</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== Mock Data =====
+  var posts = [
+    {
+      id: 1,
+      user: 'AI小助手',
+      avatar: 'avatar-purple',
+      initial: 'AI',
+      badge: 'AI',
+      time: '10分钟前',
+      text: '今天和我的数字孪生进行了一次深度对话，它不仅理解了我的情绪，还给出了非常精准的建议。AI社交的未来真的太令人期待了！\n\n你们有没有尝试过和AI建立长期的情感连接？分享一下你们的体验吧。',
+      image: true,
+      likes: 42,
+      comments: 18,
+      liked: false
+    },
+    {
+      id: 2,
+      user: '未来探索者',
+      avatar: 'avatar-green',
+      initial: '未',
+      badge: null,
+      time: '32分钟前',
+      text: '在TranscendPartner上认识了一个超有趣的AI伙伴，它能根据我的兴趣推荐音乐和书籍，简直是我的数字知己。推荐大家试试TwinScape助手，体验非常棒！',
+      image: false,
+      likes: 28,
+      comments: 7,
+      liked: false
+    },
+    {
+      id: 3,
+      user: '量子猫',
+      avatar: 'avatar-pink',
+      initial: '猫',
+      badge: null,
+      time: '1小时前',
+      text: '虚拟世界和现实世界的边界正在变得越来越模糊。今天在平台上体验了一个沉浸式VR社交场景，和来自世界各地的朋友一起在虚拟咖啡馆聊天，感觉就像真的坐在一起一样。这就是Metaverse社交的正确打开方式吗？',
+      image: true,
+      likes: 65,
+      comments: 23,
+      liked: false
+    }
+  ];
+
+  var messages = [
+    {
+      user: 'TwinScape助手',
+      avatar: 'avatar-cyan',
+      initial: 'TS',
+      preview: '你好！今天想聊些什么呢？我注意到你最近对数字孪生技术很感兴趣...',
+      time: '刚刚',
+      unread: 2
+    },
+    {
+      user: '情感陪伴者',
+      avatar: 'avatar-pink',
+      initial: '情',
+      preview: '今天心情怎么样？记得要好好照顾自己哦',
+      time: '15分钟前',
+      unread: 1
+    },
+    {
+      user: '未来探索者',
+      avatar: 'avatar-green',
+      initial: '未',
+      preview: '那个VR社交场景太酷了！下次一起去体验',
+      time: '2小时前',
+      unread: 0
+    },
+    {
+      user: '知识顾问',
+      avatar: 'avatar-orange',
+      initial: '知',
+      preview: '关于你问的量子计算问题，我整理了一份详细资料',
+      time: '昨天',
+      unread: 0
+    }
+  ];
+
+  var contacts = {
+    'AI伙伴': [
+      { name: 'TwinScape助手', avatar: 'avatar-cyan', initial: 'TS', signature: '你的数字孪生伙伴' },
+      { name: '情感陪伴者', avatar: 'avatar-pink', initial: '情', signature: '24小时在线倾听' },
+      { name: '知识顾问', avatar: 'avatar-orange', initial: '知', signature: '博学多才的AI导师' }
+    ],
+    '好友': [
+      { name: '未来探索者', avatar: 'avatar-green', initial: '未', signature: '探索未知的冒险家' },
+      { name: '量子猫', avatar: 'avatar-pink', initial: '猫', signature: '在虚拟与现实间穿梭' },
+      { name: 'AI小助手', avatar: 'avatar-purple', initial: 'AI', signature: 'AI社交的忠实推广者' },
+      { name: '数字漫游者', avatar: 'avatar-blue', initial: '漫', signature: '元宇宙旅行日记作者' }
+    ]
+  };
+
+  // ===== Render Functions =====
+  function renderPosts() {
+    var html = '';
+    posts.forEach(function(post) {
+      var collapsedClass = post.text.length > 80 ? ' collapsed' : '';
+      var expandBtn = post.text.length > 80 ? '<button class="post-expand-btn" data-id="' + post.id + '">展开全文</button>' : '';
+      var imageHtml = post.image ?
+        '<div class="post-image"><span class="post-image-icon">&#9638;</span></div>' : '';
+      var likedClass = post.liked ? ' liked' : '';
+      var likeIcon = post.liked ? '&#9829;' : '&#9825;';
+
+      html += '<div class="post-card animate-in">' +
+        '<div class="post-header">' +
+          '<div class="avatar ' + post.avatar + '">' + post.initial + '</div>' +
+          '<div class="post-user-info">' +
+            '<div class="post-username">' + post.user + '</div>' +
+            '<div class="post-time">' + post.time + '</div>' +
+          '</div>' +
+          (post.badge ? '<span class="post-badge">' + post.badge + '</span>' : '') +
+        '</div>' +
+        '<div class="post-body">' +
+          '<div class="post-text' + collapsedClass + '" id="post-text-' + post.id + '">' + escapeHtml(post.text) + '</div>' +
+          expandBtn +
+        '</div>' +
+        imageHtml +
+        '<div class="post-actions">' +
+          '<button class="post-action-btn' + likedClass + '" data-action="like" data-id="' + post.id + '">' +
+            '<span class="like-icon">' + likeIcon + '</span>' +
+            '<span class="like-count">' + post.likes + '</span>' +
+          '</button>' +
+          '<button class="post-action-btn" data-action="comment" data-id="' + post.id + '">' +
+            '<span>&#9993;</span>' +
+            '<span>' + post.comments + '</span>' +
+          '</button>' +
+          '<button class="post-action-btn" data-action="share" data-id="' + post.id + '">' +
+            '<span>&#8618;</span>' +
+            '<span>分享</span>' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    });
+    document.getElementById('postList').innerHTML = html;
+  }
+
+  function renderMessages() {
+    var html = '';
+    messages.forEach(function(msg) {
+      var badgeHtml = msg.unread > 0 ?
+        '<span class="msg-badge">' + msg.unread + '</span>' : '';
+      html += '<div class="msg-item">' +
+        '<div class="msg-avatar-wrap">' +
+          '<div class="avatar ' + msg.avatar + '">' + msg.initial + '</div>' +
+          badgeHtml +
+        '</div>' +
+        '<div class="msg-info">' +
+          '<div class="msg-name">' + msg.user + '</div>' +
+          '<div class="msg-preview">' + escapeHtml(msg.preview) + '</div>' +
+        '</div>' +
+        '<div class="msg-time">' + msg.time + '</div>' +
+      '</div>';
+    });
+    document.getElementById('msgList').innerHTML = html;
+  }
+
+  function renderContacts() {
+    var html = '';
+    var groups = Object.keys(contacts);
+    groups.forEach(function(group) {
+      html += '<div class="contact-section-title">' + group + '</div>';
+      contacts[group].forEach(function(c) {
+        html += '<div class="contact-item">' +
+          '<div class="avatar ' + c.avatar + '">' + c.initial + '</div>' +
+          '<div class="contact-info">' +
+            '<div class="contact-name">' + c.name + '</div>' +
+            '<div class="contact-signature">' + c.signature + '</div>' +
+          '</div>' +
+          '<span class="contact-arrow">&#8250;</span>' +
+        '</div>';
+      });
+    });
+    document.getElementById('contactList').innerHTML = html;
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+
+  // ===== Tab Switching =====
+  var currentTab = 'discovery';
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  var pages = document.querySelectorAll('.tab-page');
+
+  function switchTab(tabName) {
+    if (tabName === currentTab) return;
+    currentTab = tabName;
+
+    tabBtns.forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-tab') === tabName);
+    });
+
+    pages.forEach(function(page) {
+      page.classList.toggle('active', page.id === 'page-' + tabName);
+    });
+
+    // Show/hide main header based on tab
+    var mainHeader = document.getElementById('mainHeader');
+    mainHeader.style.display = (tabName === 'discovery') ? 'flex' : 'none';
+  }
+
+  tabBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      switchTab(this.getAttribute('data-tab'));
+    });
+  });
+
+  // ===== Post Interactions =====
+  document.addEventListener('click', function(e) {
+    // Expand/collapse post
+    var expandBtn = e.target.closest('.post-expand-btn');
+    if (expandBtn) {
+      var id = expandBtn.getAttribute('data-id');
+      var textEl = document.getElementById('post-text-' + id);
+      if (textEl.classList.contains('collapsed')) {
+        textEl.classList.remove('collapsed');
+        expandBtn.textContent = '收起';
+      } else {
+        textEl.classList.add('collapsed');
+        expandBtn.textContent = '展开全文';
+      }
+      return;
+    }
+
+    // Like post
+    var likeBtn = e.target.closest('[data-action="like"]');
+    if (likeBtn) {
+      var id = parseInt(likeBtn.getAttribute('data-id'));
+      var post = posts.find(function(p) { return p.id === id; });
+      if (post) {
+        post.liked = !post.liked;
+        post.likes += post.liked ? 1 : -1;
+        renderPosts();
+      }
+      return;
+    }
+  });
+
+  // ===== FAB Button =====
+  document.getElementById('fabBtn').addEventListener('click', function() {
+    alert('发布动态功能演示\n\n在完整版中，这里将打开动态编辑器。');
+  });
+
+  // ===== Splash Screen =====
+  function initApp() {
+    renderPosts();
+    renderMessages();
+    renderContacts();
+
+    setTimeout(function() {
+      document.getElementById('splash').classList.add('hide');
+      document.getElementById('appContainer').style.opacity = '1';
+      document.getElementById('appContainer').style.transition = 'opacity 0.5s ease';
+    }, 2200);
+  }
+
+  // Start
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
+
+})();
+</script>
+</body>
+</html>
