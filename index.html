@@ -806,6 +806,36 @@ section {
 ::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.2); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0, 212, 255, 0.4); }
 
+/* ===== SECTION DIVIDER ===== */
+.section-divider {
+  width: 60px; height: 2px; margin: 0 auto;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+  opacity: 0.3;
+}
+
+/* ===== DEMO LABEL ===== */
+.demo-label {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 16px; padding: 10px 14px;
+  background: rgba(0, 212, 255, 0.06);
+  border: 1px solid rgba(0, 212, 255, 0.12);
+  border-radius: 10px; cursor: pointer;
+  transition: all 0.3s ease;
+}
+.demo-label:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.2);
+}
+.demo-label-name {
+  font-family: var(--font-headline); font-size: 0.82rem;
+  font-weight: 600; color: var(--text-primary);
+}
+.demo-label-tag {
+  font-size: 0.72rem; color: var(--text-dim);
+  background: rgba(255,255,255,0.05);
+  padding: 2px 8px; border-radius: 6px;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   section, .video-section, .easter-egg-section { padding-left: 20px; padding-right: 20px; }
@@ -868,6 +898,7 @@ section {
 </div>
 
 <!-- ===== PRODUCTS ===== -->
+<div class="section-divider"></div>
 <section id="products">
   <h2 class="section-title reveal">三个产品，一个生态</h2>
   <p class="section-subtitle reveal">围绕"数字人孪生"核心技术，构建从采集到社交的完整产品矩阵。每个产品独立成军，协同作战。</p>
@@ -882,14 +913,19 @@ section {
           <div class="product-card-title">TwinCapture</div>
         </div>
       </div>
-      <p class="product-card-desc">数字人工工厂。用手机摄像头采集面部、声音和表情，本地 AI 实时处理，生成高精度数字人模型。你的数据，从不出手。</p>
+      <p class="product-card-desc">数字人工厂。用一部手机，15–60 分钟，采集外观、表情、声音、动作等八维数据，一键生成高保真三维数字人。本地加密处理，数据完全由你掌控。</p>
       <ul class="product-card-features">
-        <li>手机端面部 + 声音采集</li>
-        <li>本地 AI 实时推理生成</li>
+        <li>外观建模 · 表情捕捉</li>
+        <li>声音克隆 · 动作录制</li>
+        <li>性格画像 · 知识图谱</li>
+        <li>记忆存储 · 社交关系</li>
         <li>AES-256-GCM 端到端加密</li>
-        <li>VRM 标准数字人格式输出</li>
-        <li>零云端依赖，数据主权归你</li>
       </ul>
+      <div class="demo-label">
+        <img src="assets/icon-twincapture.jpg" alt="" style="width:20px;height:20px;border-radius:5px;">
+        <span class="demo-label-name">TwinCapture</span>
+        <span class="demo-label-tag">数字人工厂 · 交互演示</span>
+      </div>
     </div>
 
     <!-- TranscendPartner -->
@@ -901,14 +937,19 @@ section {
           <div class="product-card-title">TranscendPartner</div>
         </div>
       </div>
-      <p class="product-card-desc">AI 社交网络。零时群聊，无需注册，即开即走。你的数字人替你社交，24/7 在线。AI 驱动的深度对话，超越文字的交流。</p>
+      <p class="product-card-desc">AI 社交网络。创建专属孪生伙伴与超级伙伴，在广场分享思想，在对话中深度联结。AI 不再是工具，而是与你同行的伙伴。</p>
       <ul class="product-card-features">
-        <li>零时群聊：即开即走</li>
-        <li>数字人 24/7 替身社交</li>
-        <li>AI 驱动深度对话</li>
-        <li>WebSocket 实时通信</li>
-        <li>跨平台：iOS / Android / Web</li>
+        <li>创建孪生伙伴 — 你的数字分身</li>
+        <li>创建超级伙伴 — AI 智能体</li>
+        <li>广场分享 — 开放社区互动</li>
+        <li>深度聊天 — 一对一私密对话</li>
+        <li>碳基部落 + 硅基共鸣</li>
       </ul>
+      <div class="demo-label">
+        <img src="assets/icon-transcendpartner.jpg" alt="" style="width:20px;height:20px;border-radius:5px;">
+        <span class="demo-label-name">TranscendPartner</span>
+        <span class="demo-label-tag">AI 社交网络 · 交互演示</span>
+      </div>
     </div>
   </div>
 
@@ -935,6 +976,7 @@ section {
 </section>
 
 <!-- ===== VISION ===== -->
+<div class="section-divider"></div>
 <section>
   <h2 class="section-title reveal">我们能实现多大的梦</h2>
   <p class="section-subtitle reveal">让每个人都能在数字世界中拥有一个真实的自己——不是虚拟头像，而是有表情、有声音、有个性的数字孪生。</p>
@@ -964,6 +1006,7 @@ section {
 </section>
 
 <!-- ===== TECH STACK ===== -->
+<div class="section-divider"></div>
 <section>
   <h2 class="section-title reveal">我们用的技术</h2>
   <p class="section-subtitle reveal">统一的技术栈确保三个产品无缝协同。从 3D 渲染到 AI 推理，从本地存储到实时通信，每一层都经过精心选型。</p>
