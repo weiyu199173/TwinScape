@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TwinScape - 致雨·数化未来</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0c1225;
+  --bg-secondary: #0a1628;
+  --text-primary: #e7e9ea;
+  --text-secondary: #cfd9de;
+  --text-dim: #71767b;
+  --accent-cyan: #00d4ff;
+  --accent-purple: #a855f7;
+  --accent-teal: #00c9a7;
+  --gradient-main: linear-gradient(135deg, #00d4ff, #00c9a7, #a855f7);
+  --font-body: 'Noto Sans SC', sans-serif;
+  --font-headline: 'Space Grotesk', sans-serif;
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ===== NAV ===== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  background: rgba(12, 18, 37, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0 40px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.nav-brand img {
+  height: 32px;
+  width: auto;
+}
+
+.nav-brand span {
+  font-family: var(--font-headline);
+  font-size: 1.1em;
+  font-weight: 600;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9em;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover { color: var(--accent-cyan); }
+
+.nav-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background: rgba(12, 18, 37, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 20px 40px;
+  z-index: 999;
+}
+
+.mobile-menu.open { display: block; }
+
+.mobile-menu a {
+  display: block;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 12px 0;
+  font-size: 1em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.mobile-menu a:hover { color: var(--accent-cyan); }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-hamburger { display: block; }
+  .nav { padding: 0 20px; }
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 40px 80px;
+  overflow: hidden;
+}
+
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+
+.hero h1 {
+  font-family: var(--font-headline);
+  font-size: clamp(2em, 5vw, 3.5em);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: clamp(0.95em, 2vw, 1.15em);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 36px;
+  line-height: 1.8;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: var(--radius);
+  font-size: 0.95em;
+  font-family: var(--font-body);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: var(--accent-cyan);
+}
+
+.btn-outline:hover {
+  background: rgba(0, 212, 255, 0.08);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+}
+
+.btn-fill {
+  background: var(--gradient-main);
+  color: #fff;
+  font-weight: 500;
+}
+
+.btn-fill:hover {
+  box-shadow: 0 4px 24px rgba(0, 212, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ===== SECTIONS ===== */
+section {
+  padding: 100px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-family: var(--font-headline);
+  font-size: clamp(1.6em, 3.5vw, 2.4em);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto 60px;
+  font-size: 0.95em;
+  line-height: 1.8;
+}
+
+/* ===== GLASS CARD ===== */
+.glass-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 212, 255, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  z-index: 1;
+}
+
+.glass-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 201, 167, 0.1), rgba(168, 85, 247, 0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+
+.glass-card:hover {
+  border-color: rgba(0, 212, 255, 0.25);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 40px rgba(0, 212, 255, 0.1), 0 0 60px rgba(0, 212, 255, 0.04);
+}
+
+.glass-card:hover::after { opacity: 1; }
+
+/* ===== VIDEO DEMO ===== */
+.video-section {
+  padding: 60px 40px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.video-wrapper {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  transition: all 0.5s;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+.video-wrapper:hover {
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 8px 50px rgba(0, 212, 255, 0.12), 0 0 80px rgba(0, 212, 255, 0.05);
+}
+
+.video-wrapper iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+}
+
+/* ===== PRODUCTS ===== */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 24px;
+  margin-bottom: 60px;
+}
+
+.product-card {
+  padding: 36px;
+}
+
+.product-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.product-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.product-card-label {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+}
+
+.product-card-title {
+  font-family: var(--font-headline);
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
+.product-card-desc {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+
+.product-card-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-card-features li {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.product-card-features li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cyan-theme .product-card-label { color: var(--accent-cyan); }
+.cyan-theme .product-card-title { color: var(--accent-cyan); }
+.cyan-theme .product-card-features li::before { background: var(--accent-cyan); }
+
+.purple-theme .product-card-label { color: var(--accent-purple); }
+.purple-theme .product-card-title { color: var(--accent-purple); }
+.purple-theme .product-card-features li::before { background: var(--accent-purple); }
+
+/* ===== ECOSYSTEM FLOW ===== */
+.ecosystem-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 20px;
+  flex-wrap: wrap;
+}
+
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.flow-node-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.flow-node-logo {
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 0 16px rgba(0, 212, 255, 0.4));
+}
+
+.flow-node-name {
+  font-family: var(--font-headline);
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.flow-node-desc {
+  font-size: 0.75em;
+  color: var(--text-dim);
+}
+
+.flow-arrow {
+  font-size: 1.5em;
+  color: var(--text-dim);
+}
+
+/* ===== VISION ===== */
+.vision-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.vision-item {
+  padding: 32px;
+  text-align: center;
+}
+
+.vision-icon {
+  font-size: 2em;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.vision-title {
+  font-family: var(--font-headline);
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--accent-cyan);
+}
+
+.vision-desc {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ===== TECH STACK ===== */
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.tech-card {
+  padding: 32px;
+}
+
+.tech-category {
+  font-family: var(--font-headline);
+  font-size: 1.05em;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--accent-cyan);
+}
+
+.tech-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tech-list li {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tech-list li::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent-teal);
+  flex-shrink: 0;
+}
+
+/* ===== EASTER EGG ===== */
+.easter-egg-section {
+  padding: 60px 40px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.easter-egg-card {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 28px 36px;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid rgba(168, 85, 247, 0.1);
+  transition: all 0.5s;
+}
+
+.easter-egg-card:hover {
+  border-color: rgba(168, 85, 247, 0.4);
+  box-shadow: 0 8px 40px rgba(168, 85, 247, 0.12), 0 0 60px rgba(168, 85, 247, 0.05);
+}
+
+.easter-egg-card .ee-title {
+  font-size: 1em;
+  margin-bottom: 8px;
+}
+
+.easter-egg-card .ee-link {
+  font-size: 0.85em;
+  color: var(--accent-purple);
+  text-decoration: none;
+  transition: opacity 0.3s;
+}
+
+.easter-egg-card .ee-link:hover { opacity: 0.8; }
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: var(--radius-lg);
+  max-width: 700px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(168, 85, 247, 0.08);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 24px;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.modal-paper-title {
+  font-family: var(--font-headline);
+  font-size: 1.6em;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #a855f7, #00d4ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.modal-paper-subtitle {
+  font-size: 0.85em;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.modal-author {
+  font-size: 0.85em;
+  color: var(--accent-purple);
+  margin-bottom: 20px;
+}
+
+.modal-abstract {
+  font-size: 0.9em;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 28px;
+  padding: 16px 20px;
+  border-left: 3px solid rgba(168, 85, 247, 0.3);
+  background: rgba(168, 85, 247, 0.03);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.findings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.finding-card {
+  padding: 20px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(168, 85, 247, 0.08);
+}
+
+.finding-card .finding-icon {
+  font-size: 1.5em;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.finding-card .finding-text {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.bug-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  font-size: 0.8em;
+}
+
+.bug-table th {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+  color: var(--accent-purple);
+  font-weight: 600;
+}
+
+.bug-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+}
+
+.bug-table tr:hover td {
+  background: rgba(168, 85, 247, 0.03);
+}
+
+.modal-quote {
+  font-size: 0.9em;
+  color: var(--accent-teal);
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 24px;
+  padding: 16px;
+  border-top: 1px solid rgba(0, 201, 167, 0.1);
+  border-bottom: 1px solid rgba(0, 201, 167, 0.1);
+}
+
+.modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  font-size: 0.9em;
+  font-family: var(--font-body);
+  text-decoration: none;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: #fff;
+  font-weight: 500;
+  transition: all 0.3s;
+  margin-bottom: 16px;
+}
+
+.modal-btn:hover {
+  box-shadow: 0 4px 24px rgba(168, 85, 247, 0.3);
+  transform: translateY(-2px);
+}
+
+.modal-disclaimer {
+  font-size: 0.75em;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .findings-grid { grid-template-columns: 1fr; }
+  .modal { padding: 28px 20px; }
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 40px;
+  text-align: center;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.footer-brand img {
+  height: 28px;
+  width: auto;
+}
+
+.footer-brand span {
+  font-family: var(--font-headline);
+  font-size: 1em;
+  font-weight: 600;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-copy {
+  font-size: 0.8em;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+
+.footer-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.85em;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover { color: var(--accent-cyan); }
+
+/* ===== REVEAL ANIMATION ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 212, 255, 0.4); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  section, .video-section, .easter-egg-section { padding-left: 20px; padding-right: 20px; }
+  .hero { padding: 100px 20px 60px; }
+  .products-grid { grid-template-columns: 1fr; }
+  .tech-grid { grid-template-columns: 1fr; }
+  .ecosystem-flow { gap: 12px; }
+  .flow-node-icon, .flow-node-logo { width: 48px; height: 48px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="nav">
+  <a href="#" class="nav-brand">
+    <img src="assets/logo.png" alt="TwinScape">
+    <span>致雨·数化未来</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="https://github.com" target="_blank">GitHub</a></li>
+    <li><a href="#products">了解更多</a></li>
+    <li><a href="#products">TwinCapture</a></li>
+    <li><a href="#products">TranscendPartner</a></li>
+    <li><a href="#footer">联系我们</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="菜单">&#9776;</button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="https://github.com" target="_blank">GitHub</a>
+  <a href="#products" onclick="closeMobile()">了解更多</a>
+  <a href="#products" onclick="closeMobile()">TwinCapture</a>
+  <a href="#products" onclick="closeMobile()">TranscendPartner</a>
+  <a href="#footer" onclick="closeMobile()">联系我们</a>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+  <div class="hero-content">
+    <h1>用一部手机<br>留住一个完整的自己</h1>
+    <p>本地数字人孪生 + 3D自然场景 + 零时群聊<br>采集在本地，社交即开即走，隐私至上。</p>
+    <div class="hero-buttons">
+      <a href="https://github.com" target="_blank" class="btn btn-outline">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="#products" class="btn btn-fill">了解更多</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== VIDEO DEMO ===== -->
+<div class="video-section">
+  <h2 class="section-title reveal">60秒了解 TwinScape 数字孪生生态</h2>
+  <div class="video-wrapper reveal" style="margin-top: 40px;">
+    <iframe src="assets/video-demo.html" allow="autoplay" allowfullscreen></iframe>
+  </div>
+</div>
+
+<!-- ===== PRODUCTS ===== -->
+<section id="products">
+  <h2 class="section-title reveal">三个产品，一个生态</h2>
+  <p class="section-subtitle reveal">围绕"数字人孪生"核心技术，构建从采集到社交的完整产品矩阵。每个产品独立成军，协同作战。</p>
+
+  <div class="products-grid">
+    <!-- TwinCapture -->
+    <div class="glass-card product-card cyan-theme reveal">
+      <div class="product-card-header">
+        <img class="product-card-icon" src="assets/icon-twincapture.jpg" alt="TwinCapture">
+        <div>
+          <div class="product-card-label">Product 01</div>
+          <div class="product-card-title">TwinCapture</div>
+        </div>
+      </div>
+      <p class="product-card-desc">数字人工工厂。用手机摄像头采集面部、声音和表情，本地 AI 实时处理，生成高精度数字人模型。你的数据，从不出手。</p>
+      <ul class="product-card-features">
+        <li>手机端面部 + 声音采集</li>
+        <li>本地 AI 实时推理生成</li>
+        <li>AES-256-GCM 端到端加密</li>
+        <li>VRM 标准数字人格式输出</li>
+        <li>零云端依赖，数据主权归你</li>
+      </ul>
+    </div>
+
+    <!-- TranscendPartner -->
+    <div class="glass-card product-card purple-theme reveal">
+      <div class="product-card-header">
+        <img class="product-card-icon" src="assets/icon-transcendpartner.jpg" alt="TranscendPartner">
+        <div>
+          <div class="product-card-label">Product 02</div>
+          <div class="product-card-title">TranscendPartner</div>
+        </div>
+      </div>
+      <p class="product-card-desc">AI 社交网络。零时群聊，无需注册，即开即走。你的数字人替你社交，24/7 在线。AI 驱动的深度对话，超越文字的交流。</p>
+      <ul class="product-card-features">
+        <li>零时群聊：即开即走</li>
+        <li>数字人 24/7 替身社交</li>
+        <li>AI 驱动深度对话</li>
+        <li>WebSocket 实时通信</li>
+        <li>跨平台：iOS / Android / Web</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Ecosystem Flow -->
+  <div class="ecosystem-flow reveal">
+    <div class="flow-node">
+      <img class="flow-node-icon" src="assets/icon-twincapture.jpg" alt="TwinCapture">
+      <div class="flow-node-name" style="color: var(--accent-cyan)">TwinCapture</div>
+      <div class="flow-node-desc">数据采集</div>
+    </div>
+    <div class="flow-arrow">&#10132;</div>
+    <div class="flow-node">
+      <img class="flow-node-icon" src="assets/icon-transcendpartner.jpg" alt="TranscendPartner">
+      <div class="flow-node-name" style="color: var(--accent-purple)">TranscendPartner</div>
+      <div class="flow-node-desc">社交互动</div>
+    </div>
+    <div class="flow-arrow">&#10132;</div>
+    <div class="flow-node">
+      <img class="flow-node-logo" src="assets/logo.png" alt="TwinScape">
+      <div class="flow-node-name" style="background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">TwinScape</div>
+      <div class="flow-node-desc">孪生世界</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== VISION ===== -->
+<section>
+  <h2 class="section-title reveal">我们能实现多大的梦</h2>
+  <p class="section-subtitle reveal">让每个人都能在数字世界中拥有一个真实的自己——不是虚拟头像，而是有表情、有声音、有个性的数字孪生。</p>
+
+  <div class="vision-grid">
+    <div class="glass-card vision-item reveal">
+      <span class="vision-icon">&#129302;</span>
+      <div class="vision-title">真实数字孪生</div>
+      <p class="vision-desc">不是卡通头像，而是有你的表情、声音和个性的高保真数字人。AI 让你的数字分身越来越像你。</p>
+    </div>
+    <div class="glass-card vision-item reveal">
+      <span class="vision-icon">&#127758;</span>
+      <div class="vision-title">沉浸式 3D 世界</div>
+      <p class="vision-desc">程序化生成的自然场景，从森林到海洋，从城市到星空。你的数字人在这里生活、社交、探索。</p>
+    </div>
+    <div class="glass-card vision-item reveal">
+      <span class="vision-icon">&#128274;</span>
+      <div class="vision-title">隐私即设计</div>
+      <p class="vision-desc">从架构层面保护隐私。零云端存储，端到端加密，你的数据只存在于你的设备上。</p>
+    </div>
+    <div class="glass-card vision-item reveal">
+      <span class="vision-icon">&#9889;</span>
+      <div class="vision-title">即开即走</div>
+      <p class="vision-desc">无需注册，无需下载，打开即用。社交应该像呼吸一样自然，而不是填表。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TECH STACK ===== -->
+<section>
+  <h2 class="section-title reveal">我们用的技术</h2>
+  <p class="section-subtitle reveal">统一的技术栈确保三个产品无缝协同。从 3D 渲染到 AI 推理，从本地存储到实时通信，每一层都经过精心选型。</p>
+
+  <div class="tech-grid">
+    <div class="glass-card tech-card reveal">
+      <div class="tech-category">&#128640; 跨平台框架</div>
+      <ul class="tech-list">
+        <li>React Native 0.74 + Expo SDK 51</li>
+        <li>TypeScript 5.3</li>
+        <li>React Navigation 6</li>
+        <li>iOS / Android / Web</li>
+      </ul>
+    </div>
+    <div class="glass-card tech-card reveal">
+      <div class="tech-category">&#127912; 3D 渲染引擎</div>
+      <ul class="tech-list">
+        <li>Three.js 0.164 + @react-three/fiber</li>
+        <li>VRM Avatar</li>
+        <li>@react-three/drei</li>
+        <li>程序化场景生成</li>
+      </ul>
+    </div>
+    <div class="glass-card tech-card reveal">
+      <div class="tech-category">&#129504; AI 推理层</div>
+      <ul class="tech-list">
+        <li>统一 LLM 抽象层</li>
+        <li>TTS 语音合成</li>
+        <li>MediaPipe 面部捕捉</li>
+        <li>唇形同步引擎</li>
+      </ul>
+    </div>
+    <div class="glass-card tech-card reveal">
+      <div class="tech-category">&#128274; 数据与安全</div>
+      <ul class="tech-list">
+        <li>SQLite 本地数据库</li>
+        <li>AES-256-GCM 加密</li>
+        <li>expo-secure-store</li>
+        <li>GitHub 私有仓库备份</li>
+      </ul>
+    </div>
+    <div class="glass-card tech-card reveal">
+      <div class="tech-category">&#128225; 通信与认证</div>
+      <ul class="tech-list">
+        <li>WebSocket 中继服务器</li>
+        <li>Supabase Auth</li>
+        <li>JWT Token</li>
+        <li>CDN 数字人分发</li>
+      </ul>
+    </div>
+    <div class="glass-card tech-card reveal">
+      <div class="tech-category">&#128736; 开放标准</div>
+      <ul class="tech-list">
+        <li>VRM</li>
+        <li>glTF / SMPL-X</li>
+        <li>ONNX</li>
+        <li>MIT 开源</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== EASTER EGG ===== -->
+<div class="easter-egg-section">
+  <div class="glass-card easter-egg-card reveal" id="easterEggCard">
+    <div class="ee-title">&#127756; 你相信宇宙是一台大型计算机吗？</div>
+    <span class="ee-link">点击探索 &#10132;</span>
+  </div>
+</div>
+
+<!-- Easter Egg Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-paper-title">宇宙是台大型计算机</div>
+    <div class="modal-paper-subtitle">基于因果视界热力学与兰道尔原理的宇宙操作系统架构分析</div>
+    <div class="modal-author">朱纯 · 独立研究人员</div>
+    <div class="modal-abstract">
+      本文提出一个严肃（但并不完全严肃）的理论框架，将宇宙视为一台正在运行的巨型计算机。通过整合因果视界热力学、兰道尔原理和量子信息理论，我们推导出宇宙操作系统的核心架构，并发现了若干令人震惊（或并不令人震惊）的系统特性。
+    </div>
+
+    <div class="findings-grid">
+      <div class="finding-card">
+        <span class="finding-icon">&#128293;</span>
+        <div class="finding-text"><strong>宇宙膨胀 = CPU 散热</strong><br>暗能量实际上是宇宙的散热风扇，推动空间膨胀以防止过热。</div>
+      </div>
+      <div class="finding-card">
+        <span class="finding-icon">&#128371;</span>
+        <div class="finding-text"><strong>黑洞 = 回收站</strong><br>霍金辐射本质上是"清空回收站"操作，信息虽然理论上可恢复，但实际操作难度极大。</div>
+      </div>
+      <div class="finding-card">
+        <span class="finding-icon">&#129516;</span>
+        <div class="finding-text"><strong>人类 = 病毒</strong><br>好消息：宇宙目前还没有安装杀毒软件。坏消息：补丁星期二可能要等很久。</div>
+      </div>
+      <div class="finding-card">
+        <span class="finding-icon">&#128187;</span>
+        <div class="finding-text"><strong>宇宙寿命 ≈ 10<sup>100</sup> 年</strong><br>基于黑洞蒸发时间计算，宇宙的"关机倒计时"已经开始。</div>
+      </div>
+    </div>
+
+    <table class="bug-table">
+      <thead>
+        <tr>
+          <th>Bug ID</th>
+          <th>描述</th>
+          <th>严重程度</th>
+          <th>状态</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>COS-001</td><td>光速限制导致宇宙边缘无法同步</td><td>高</td><td>Won't Fix</td></tr>
+        <tr><td>COS-002</td><td>量子纠缠通信存在"窃听"风险</td><td>中</td><td>By Design</td></tr>
+        <tr><td>COS-003</td><td>暗物质占比过高，内存泄漏疑似</td><td>严重</td><td>Investigating</td></tr>
+        <tr><td>COS-004</td><td>熵增不可逆，回收站功能不完整</td><td>高</td><td>Won't Fix</td></tr>
+        <tr><td>COS-005</td><td>平行宇宙分支过多，线程管理混乱</td><td>中</td><td>Under Review</td></tr>
+        <tr><td>COS-006</td><td>时间只能单向流动，用户体验差</td><td>低</td><td>Feature Request</td></tr>
+      </tbody>
+    </table>
+
+    <div class="modal-quote">"宇宙散热管理比 Windows 强，运行138亿年未蓝屏"</div>
+
+    <a href="assets/easter-egg-paper.pdf" target="_blank" class="modal-btn">&#128214; 在线阅读完整论文</a>
+
+    <div class="modal-disclaimer">本文不含补充材料（因为宇宙已经够复杂了）</div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer" id="footer">
+  <div class="footer-brand">
+    <img src="assets/logo.png" alt="TwinScape">
+    <span>致雨·数化未来</span>
+  </div>
+  <div class="footer-copy">&copy; 2025 TwinScape. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="https://github.com" target="_blank">GitHub</a>
+    <a href="mailto:contact@twinscape.ai">联系我们</a>
+  </div>
+</footer>
+
+<script>
+// ===== MOBILE MENU =====
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+
+hamburger.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+});
+
+function closeMobile() {
+  mobileMenu.classList.remove('open');
+}
+
+// ===== SCROLL REVEAL =====
+const revealElements = document.querySelectorAll('.reveal');
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+revealElements.forEach(el => revealObserver.observe(el));
+
+// ===== EASTER EGG MODAL =====
+const easterEggCard = document.getElementById('easterEggCard');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalClose = document.getElementById('modalClose');
+
+easterEggCard.addEventListener('click', () => {
+  modalOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+});
+
+function closeModal() {
+  modalOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+modalClose.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', (e) => {
+  if (e.target === modalOverlay) closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ===== HERO PARTICLES =====
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let w, h;
+
+  function resize() {
+    const hero = canvas.parentElement;
+    w = canvas.width = hero.offsetWidth;
+    h = canvas.height = hero.offsetHeight;
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.r = Math.random() * 2 + 0.5;
+      this.dx = (Math.random() - 0.5) * 0.4;
+      this.dy = (Math.random() - 0.5) * 0.4;
+      this.alpha = Math.random() * 0.4 + 0.1;
+      this.color = ['0, 212, 255', '0, 201, 167', '168, 85, 247'][Math.floor(Math.random() * 3)];
+    }
+    update() {
+      this.x += this.dx;
+      this.y += this.dy;
+      if (this.x < 0 || this.x > w) this.dx *= -1;
+      if (this.y < 0 || this.y > h) this.dy *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + this.color + ', ' + this.alpha + ')';
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 60; i++) {
+    particles.push(new Particle());
+  }
+
+  function connectParticles() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(0, 212, 255, ' + (0.06 * (1 - dist / 150)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => {
+      p.update();
+      p.draw();
+    });
+    connectParticles();
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+})();
+</script>
+</body>
+</html>
