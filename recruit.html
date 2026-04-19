@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=420">
+<title>TwinScape 招募</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0c1225;
+    display: flex;
+    justify-content: center;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #e0e6f0;
+    padding: 40px 0;
+  }
+
+  .poster {
+    width: 420px;
+    position: relative;
+    overflow: hidden;
+    padding: 48px 32px 40px;
+  }
+
+  /* 背景光晕 */
+  .poster::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    left: -60px;
+    width: 360px;
+    height: 360px;
+    background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .poster::after {
+    content: '';
+    position: absolute;
+    bottom: 100px;
+    right: -80px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(139,92,246,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* 1. 顶部品牌区 */
+  .brand {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .brand-logo {
+    width: 80px;
+    margin-bottom: 20px;
+  }
+  .brand-tagline {
+    font-size: 15px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    color: rgba(224,230,240,0.7);
+    line-height: 1.8;
+  }
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.4), transparent);
+    margin: 32px auto;
+  }
+
+  /* 通用标题 */
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00d4ff, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  /* 2. 我们在做什么 */
+  .about-text {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 2;
+    color: rgba(224,230,240,0.75);
+    margin-bottom: 40px;
+  }
+
+  /* 3. 产品卡片 */
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 44px;
+  }
+  .card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(0,212,255,0.1);
+    border-radius: 12px;
+    padding: 20px 22px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .card-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e0e6f0;
+    margin-bottom: 8px;
+  }
+  .card-desc {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: rgba(224,230,240,0.6);
+  }
+
+  /* 4. 招募 */
+  .recruit {
+    text-align: center;
+    margin-bottom: 44px;
+    position: relative;
+  }
+  .recruit-highlight {
+    font-size: 22px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #00d4ff, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 20px 0 16px;
+    letter-spacing: 1px;
+  }
+  .recruit-sub {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 2;
+    color: rgba(224,230,240,0.7);
+    margin-bottom: 12px;
+  }
+  .recruit-note {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.9;
+    color: rgba(224,230,240,0.5);
+  }
+
+  /* 5. 协作方式 */
+  .collab-text {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 2;
+    color: rgba(224,230,240,0.7);
+    margin-bottom: 44px;
+  }
+
+  /* 6. 联系方式 */
+  .contact {
+    text-align: center;
+    position: relative;
+  }
+  .contact-item {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(224,230,240,0.7);
+    line-height: 2.2;
+  }
+  .contact-item span {
+    color: #00d4ff;
+  }
+  .footer {
+    margin-top: 32px;
+    font-size: 12px;
+    font-weight: 300;
+    color: rgba(224,230,240,0.3);
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- 1. 顶部品牌区 -->
+  <div class="brand">
+    <img class="brand-logo" src="assets/logo.png" alt="TwinScape">
+    <p class="brand-tagline">在虚与实的交汇处，重塑存在的边界</p>
+  </div>
+  <div class="divider"></div>
+
+  <!-- 2. 我们在做什么 -->
+  <div class="section-title">我们在做什么</div>
+  <p class="about-text">
+    用一部手机，留住一个完整的自己。TwinScape 是一套数字孪生产品生态——从数据采集到 AI 社交，从 3D 孪生世界到端到端加密隐私保护。我们正在构建下一代数字人基础设施。
+  </p>
+
+  <!-- 3. 我们已经有了什么 -->
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">&#x1F4F1;</div>
+      <div class="card-title">TwinCapture &middot; 数字人工厂</div>
+      <div class="card-desc">雏形已就。手机端八维数据采集，本地 AI 实时生成高保真数字人。</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#x1F91D;</div>
+      <div class="card-title">TranscendPartner &middot; AI 社交网络</div>
+      <div class="card-desc">已可商用。创建孪生伙伴与超级伙伴，AI 驱动的深度社交。</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#x1F310;</div>
+      <div class="card-title">完整产品主页 + 交互演示</div>
+      <div class="card-desc">网站已上线，两个产品的静态交互演示均可体验。</div>
+    </div>
+  </div>
+
+  <!-- 4. 我们在找什么样的人 -->
+  <div class="recruit">
+    <div class="section-title">我们在找你</div>
+    <div class="recruit-highlight">想法多，还敢尝试的人</div>
+    <p class="recruit-sub">
+      不限岗位，不限背景。如果你对数字人、AI 社交、3D 世界感兴趣，如果你有想法并且愿意动手实现，你就是我们要找的人。
+    </p>
+    <p class="recruit-note">
+      前端、3D、AI、产品、设计、运营……标签不重要，重要的是你敢想敢做。
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 5. 协作方式 -->
+  <div class="section-title">协作方式</div>
+  <p class="collab-text">
+    远程兼职，灵活时间。有想法就聊，聊得来就干。
+  </p>
+
+  <div class="divider"></div>
+
+  <!-- 6. 联系方式 -->
+  <div class="contact">
+    <div class="section-title">联系我们</div>
+    <div class="contact-item">微信：<span>your_wechat_id</span></div>
+    <div class="contact-item">邮箱：<span>your@email.com</span></div>
+    <div class="footer">TwinScape &middot; 留住一个完整的自己</div>
+  </div>
+
+</div>
+</body>
+</html>
